@@ -9,9 +9,12 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.sgtcodfish.mobiusListing.components.FocusTaker;
+import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.Renderable;
+import com.sgtcodfish.mobiusListing.components.Solid;
 import com.sgtcodfish.mobiusListing.components.Velocity;
 import com.sgtcodfish.mobiusListing.player.PlayerAnimationState;
 import com.sgtcodfish.mobiusListing.player.PlayerRenderHandler;
@@ -38,22 +41,67 @@ public class PlayerEntityFactory {
 		this.animationMap = animationMap;
 	}
 
+	/**
+	 * <p>
+	 * Creates and returns an entity at the given (x, y) position. The entity
+	 * will not take focus.
+	 * </p>
+	 * 
+	 * @param x
+	 *        The x coordinate the entity will be created at.
+	 * @param y
+	 *        The y coordinate the entity will be created at.
+	 * @return The created Entity.
+	 */
 	public Entity createEntity(float x, float y) {
+		return createEntity(x, y, false);
+	}
+
+	/**
+	 * <p>
+	 * Creates and returns an entity at the given (x, y) position.
+	 * </p>
+	 * <p>
+	 * If takesFocus is true, the camera will follow this player. If more than
+	 * one Entity takes focus, behaviour is undefined.
+	 * </p>
+	 * 
+	 * @param x
+	 *        The x coordinate the entity will be created at.
+	 * @param y
+	 *        The y coordinate the entity will be created at.
+	 * @param takesFocus
+	 *        Whether the camera follows this Entity.
+	 * @return The created Entity.
+	 */
+	public Entity createEntity(float x, float y, boolean takesFocus) {
 		Entity e = world.createEntity();
 
 		Position p = world.createComponent(Position.class);
 		p.position.x = x;
 		p.position.y = y;
-
 		e.addComponent(p);
 
-		e.addComponent(world.createComponent(Velocity.class));
+		Velocity v = world.createComponent(Velocity.class);
+		e.addComponent(v);
 
-		e.addComponent(world.createComponent(PlayerState.class));
+		PlayerState ps = world.createComponent(PlayerState.class);
+		e.addComponent(ps);
 
 		Renderable d = world.createComponent(Renderable.class);
 		d.renderHandler = new PlayerRenderHandler(animationMap);
 		e.addComponent(d);
+
+		PlayerInputListener pil = world.createComponent(PlayerInputListener.class);
+		e.addComponent(pil);
+
+		Solid s = world.createComponent(Solid.class);
+		e.addComponent(s);
+
+		if (takesFocus) {
+			FocusTaker ft = world.createComponent(FocusTaker.class);
+			e.addComponent(ft);
+		}
 
 		return e;
 	}

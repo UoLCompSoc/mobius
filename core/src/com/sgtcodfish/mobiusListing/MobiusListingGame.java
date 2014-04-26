@@ -9,7 +9,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sgtcodfish.mobiusListing.factories.PlayerEntityFactory;
+import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
+import com.sgtcodfish.mobiusListing.systems.PlayerInputSystem;
 import com.sgtcodfish.mobiusListing.systems.SpriteRenderingSystem;
 
 /**
@@ -35,13 +37,15 @@ public class MobiusListingGame extends ApplicationAdapter {
 		// camera = new PerspectiveCamera(60.0f, 320.0f, 240.0f);
 		camera = new OrthographicCamera(320.0f, 240.0f);
 
+		world.setSystem(new PlayerInputSystem());
 		world.setSystem(new MovementSystem());
+		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
 
 		world.initialize();
 
 		playerEntityFactory = new PlayerEntityFactory(world);
-		playerEntity = playerEntityFactory.createEntity(5.0f, 5.0f);
+		playerEntity = playerEntityFactory.createEntity(5.0f, 5.0f, true);
 		world.addEntity(playerEntity);
 	}
 
