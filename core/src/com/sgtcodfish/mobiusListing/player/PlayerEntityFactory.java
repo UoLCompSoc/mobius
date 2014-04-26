@@ -1,4 +1,4 @@
-package com.sgtcodfish.mobiusListing.factories;
+package com.sgtcodfish.mobiusListing.player;
 
 import java.util.HashMap;
 
@@ -17,11 +17,9 @@ import com.sgtcodfish.mobiusListing.components.FocusTaker;
 import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
-import com.sgtcodfish.mobiusListing.components.Renderable;
+import com.sgtcodfish.mobiusListing.components.SpriteRenderable;
 import com.sgtcodfish.mobiusListing.components.Solid;
 import com.sgtcodfish.mobiusListing.components.Velocity;
-import com.sgtcodfish.mobiusListing.player.PlayerAnimationState;
-import com.sgtcodfish.mobiusListing.player.PlayerRenderHandler;
 
 /**
  * <p>
@@ -116,7 +114,7 @@ public class PlayerEntityFactory implements Disposable {
 		PlayerState ps = world.createComponent(PlayerState.class);
 		e.addComponent(ps);
 
-		Renderable d = world.createComponent(Renderable.class);
+		SpriteRenderable d = world.createComponent(SpriteRenderable.class);
 		d.renderHandler = new PlayerRenderHandler(animationMap);
 		e.addComponent(d);
 

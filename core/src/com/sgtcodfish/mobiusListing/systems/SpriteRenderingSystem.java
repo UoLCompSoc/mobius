@@ -7,7 +7,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.sgtcodfish.mobiusListing.components.Position;
-import com.sgtcodfish.mobiusListing.components.Renderable;
+import com.sgtcodfish.mobiusListing.components.SpriteRenderable;
 
 /**
  * Handles drawing Entities with a Position and Renderable component
@@ -16,14 +16,14 @@ import com.sgtcodfish.mobiusListing.components.Renderable;
  */
 public class SpriteRenderingSystem extends EntityProcessingSystem {
 	private ComponentMapper<Position>	positionMapper		= null;
-	private ComponentMapper<Renderable>	renderableMapper	= null;
+	private ComponentMapper<SpriteRenderable>	renderableMapper	= null;
 
 	private Batch						batch				= null;
 	private Camera						camera				= null;
 
 	@SuppressWarnings("unchecked")
 	public SpriteRenderingSystem(Batch batch, Camera camera) {
-		this(Filter.allComponents(Position.class, Renderable.class), batch, camera);
+		this(Filter.allComponents(Position.class, SpriteRenderable.class), batch, camera);
 	}
 
 	protected SpriteRenderingSystem(Filter filter, Batch batch, Camera camera) {
@@ -36,13 +36,13 @@ public class SpriteRenderingSystem extends EntityProcessingSystem {
 	@Override
 	public void initialize() {
 		positionMapper = world.getMapper(Position.class);
-		renderableMapper = world.getMapper(Renderable.class);
+		renderableMapper = world.getMapper(SpriteRenderable.class);
 	}
 
 	@Override
 	protected void process(Entity e) {
 		Position p = positionMapper.get(e);
-		Renderable d = renderableMapper.get(e);
+		SpriteRenderable d = renderableMapper.get(e);
 
 		batch.begin();
 

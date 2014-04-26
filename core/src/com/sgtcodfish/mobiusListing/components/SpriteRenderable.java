@@ -1,7 +1,6 @@
 package com.sgtcodfish.mobiusListing.components;
 
 import com.artemis.Component;
-import com.badlogic.gdx.graphics.Texture;
 import com.sgtcodfish.mobiusListing.SpriteRenderHandler;
 
 /**
@@ -9,20 +8,14 @@ import com.sgtcodfish.mobiusListing.SpriteRenderHandler;
  * 
  * @author Ashley Davis (SgtCoDFish)
  */
-public class Renderable implements Component {
-	public Texture			texture			= null;
+public class SpriteRenderable implements Component {
 	public SpriteRenderHandler	renderHandler	= null;
 
-	public Renderable() {
+	public SpriteRenderable() {
 	}
 
 	@Override
 	public void reset() {
-		if (texture != null) {
-			texture.dispose();
-		}
-
-		texture = null;
 		renderHandler = null;
 	}
 

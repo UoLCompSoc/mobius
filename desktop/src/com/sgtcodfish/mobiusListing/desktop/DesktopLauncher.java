@@ -9,7 +9,8 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 320;
 		config.height = 240;
+		config.resizable = false;
 
-		new LwjglApplication(new MobiusListingGame(), config);
+		new LwjglApplication(new MobiusListingGame(true), config);
 	}
 }
