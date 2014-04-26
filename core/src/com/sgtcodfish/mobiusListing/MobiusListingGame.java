@@ -83,7 +83,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 		camera.update();
 
-		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		world.process();
