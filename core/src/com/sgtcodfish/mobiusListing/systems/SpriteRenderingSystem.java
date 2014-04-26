@@ -6,27 +6,27 @@ import com.artemis.Filter;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.sgtcodfish.mobiusListing.components.Drawable;
 import com.sgtcodfish.mobiusListing.components.Position;
+import com.sgtcodfish.mobiusListing.components.Renderable;
 
 /**
- * Handles drawing Entities with a Position and Drawable component
+ * Handles drawing Entities with a Position and Renderable component
  * 
  * @author Ashley Davis (SgtCoDFish)
  */
-public class RenderingSystem extends EntityProcessingSystem {
-	private ComponentMapper<Position>	positionMapper	= null;
-	private ComponentMapper<Drawable>	drawableMapper	= null;
+public class SpriteRenderingSystem extends EntityProcessingSystem {
+	private ComponentMapper<Position>	positionMapper		= null;
+	private ComponentMapper<Renderable>	renderableMapper	= null;
 
-	private Batch						batch			= null;
-	private Camera						camera			= null;
+	private Batch						batch				= null;
+	private Camera						camera				= null;
 
 	@SuppressWarnings("unchecked")
-	public RenderingSystem(Batch batch, Camera camera) {
-		this(Filter.allComponents(Position.class, Drawable.class), batch, camera);
+	public SpriteRenderingSystem(Batch batch, Camera camera) {
+		this(Filter.allComponents(Position.class, Renderable.class), batch, camera);
 	}
 
-	protected RenderingSystem(Filter filter, Batch batch, Camera camera) {
+	protected SpriteRenderingSystem(Filter filter, Batch batch, Camera camera) {
 		super(filter);
 
 		this.batch = batch;
@@ -36,17 +36,17 @@ public class RenderingSystem extends EntityProcessingSystem {
 	@Override
 	public void initialize() {
 		positionMapper = world.getMapper(Position.class);
-		drawableMapper = world.getMapper(Drawable.class);
+		renderableMapper = world.getMapper(Renderable.class);
 	}
 
 	@Override
 	protected void process(Entity e) {
 		Position p = positionMapper.get(e);
-		Drawable d = drawableMapper.get(e);
+		Renderable d = renderableMapper.get(e);
 
 		batch.begin();
 
-		batch.draw(d.texture, p.position.x, p.position.y);
+		batch.draw(d.renderHandler.getFrame(world.getDelta()), p.position.x, p.position.y
 
 		batch.end();
 	}

@@ -9,11 +9,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sgtcodfish.mobiusListing.components.Drawable;
+import com.sgtcodfish.mobiusListing.components.Renderable;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.Velocity;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
-import com.sgtcodfish.mobiusListing.systems.RenderingSystem;
+import com.sgtcodfish.mobiusListing.systems.SpriteRenderingSystem;
 
 /**
  * Contains all the main logic; most should be in classes that extend
@@ -40,7 +40,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		img = new Texture("badlogic.jpg");
 
 		world.setSystem(new MovementSystem());
-		world.setSystem(new RenderingSystem(batch, camera));
+		world.setSystem(new SpriteRenderingSystem(batch, camera));
 
 		world.initialize();
 
@@ -51,7 +51,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		v.velocity.y = 1.0f;
 		exampleTextureEntity.addComponent(v);
 
-		Drawable d = world.createComponent(Drawable.class);
+		Renderable d = world.createComponent(Renderable.class);
 		d.texture = img;
 
 		exampleTextureEntity.addComponent(d);
