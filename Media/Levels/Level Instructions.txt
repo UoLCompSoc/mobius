@@ -1,0 +1,12 @@
+Instructions for each level
+(I refer to vertical red blocks as WALLS and horizontal ones as PLATFORMS, labelling from left to right 1,2...)
+
+
+1) Is just a simple jumping exercise
+
+2)Wall 1 is to be moved down a single block so the player can jump over it
+Wall 2 may need to be moved up to gain access to the green ledge (depends on the jump height)
+Regardless of this, wall 2 needs ot be moved up 1 block to allow the player to get to the exit
+
+3) Platform 1 to be UNDRAWN initially, player it to click on it and draw it to make it solid
+Platform 2 is designed to be given velocity to the right to allow the player to jump on the high green wall.
