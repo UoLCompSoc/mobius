@@ -6,8 +6,9 @@ import com.artemis.Filter;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.sgtcodfish.mobiusListing.components.PlayerSprite;
+import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
-import com.sgtcodfish.mobiusListing.components.SpriteRenderable;
 
 /**
  * Handles drawing Entities with a Position and Renderable component
@@ -15,15 +16,16 @@ import com.sgtcodfish.mobiusListing.components.SpriteRenderable;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class SpriteRenderingSystem extends EntityProcessingSystem {
-	private ComponentMapper<Position>	positionMapper		= null;
-	private ComponentMapper<SpriteRenderable>	renderableMapper	= null;
+	private ComponentMapper<Position>		positionMapper		= null;
+	private ComponentMapper<PlayerSprite>	renderableMapper	= null;
+	private ComponentMapper<PlayerState>	playerStateMapper	= null;
 
-	private Batch						batch				= null;
-	private Camera						camera				= null;
+	private Batch							batch				= null;
+	private Camera							camera				= null;
 
 	@SuppressWarnings("unchecked")
 	public SpriteRenderingSystem(Batch batch, Camera camera) {
-		this(Filter.allComponents(Position.class, SpriteRenderable.class), batch, camera);
+		this(Filter.allComponents(Position.class, PlayerState.class, PlayerSprite.class), batch, camera);
 	}
 
 	protected SpriteRenderingSystem(Filter filter, Batch batch, Camera camera) {
@@ -36,17 +38,18 @@ public class SpriteRenderingSystem extends EntityProcessingSystem {
 	@Override
 	public void initialize() {
 		positionMapper = world.getMapper(Position.class);
-		renderableMapper = world.getMapper(SpriteRenderable.class);
+		renderableMapper = world.getMapper(PlayerSprite.class);
+		playerStateMapper = world.getMapper(PlayerState.class);
 	}
 
 	@Override
 	protected void process(Entity e) {
 		Position p = positionMapper.get(e);
-		SpriteRenderable d = renderableMapper.get(e);
+		PlayerSprite sprite = renderableMapper.get(e);
 
 		batch.begin();
 
-		batch.draw(d.renderHandler.getFrame(world.getDelta()), p.position.x, p.position.y);
+		batch.draw(sprite.getFrame(playerStateMapper.get(e).state, world.getDelta()), p.position.x, p.position.y);
 
 		batch.end();
 	}

@@ -1,6 +1,7 @@
 package com.sgtcodfish.mobiusListing.levels;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.artemis.Entity;
 import com.artemis.World;
@@ -8,7 +9,9 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.Disposable;
@@ -116,7 +119,7 @@ public class LevelEntityFactory implements Disposable {
 		for (FileHandle fh : levelHandles) {
 			TiledMap map = loader.load(fh.path());
 
-			if (!isValidLevel(map)) {
+			if (!isValidLevel(map, fh.path())) {
 				Gdx.app.debug("LOAD_LEVELS", fh.path() + " is an invalid level format. Skipping.");
 				continue;
 			}
@@ -137,8 +140,92 @@ public class LevelEntityFactory implements Disposable {
 		}
 	}
 
-	public static boolean isValidLevel(TiledMap map) {
-		return true;
+	/**
+	 * <p>
+	 * Comprehensively checks the given map for defects as an early warning
+	 * system against mistakes during map making.
+	 * </p>
+	 * <p>
+	 * Most useful when called with debugging enabled.
+	 * </p>
+	 * 
+	 * @param map
+	 *        The map to check.
+	 * @param mapName
+	 *        The name of the map to use in debug output.
+	 * @return True if the map is technically valid (could still have warnings
+	 *         though), false if something is fundamentally wrong.
+	 */
+	public static boolean isValidLevel(TiledMap map, String mapName) {
+		boolean retVal = true;
+
+		HashMap<String, Boolean> found = new HashMap<>();
+		found.put("floor", false);
+		found.put("key", false);
+		found.put("exit", false);
+		found.put("playerspawn", false);
+
+		int otherLayers = 0, dxLayers = 0, dyLayers = 0, minOpacityLayers = 0, propLayers = 0;
+
+		for (int i = 0; i < map.getLayers().getCount(); i++) {
+			TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
+			String nlower = layer.getName().toLowerCase();
+
+			if (!layer.getName().equals(nlower)) {
+				Gdx.app.debug("IS_VALID_LEVEL", "Warning: non-lowercase layer name \"" + layer.getName() + "\" in "
+						+ mapName);
+			}
+
+			if (found.containsKey(nlower)) {
+				found.put(nlower, true);
+			} else {
+				otherLayers++;
+			}
+
+			MapProperties props = layer.getProperties();
+
+			if (props != null) {
+				int propCount = 0;
+
+				if (props.get("dx") != null) {
+					dxLayers++;
+					propCount++;
+				}
+
+				if (props.get("dy") != null) {
+					dyLayers++;
+					propCount++;
+				}
+
+				if (props.get("minOpacity") != null) {
+					minOpacityLayers++;
+					propCount++;
+				}
+
+				if (propCount >= 1) {
+					propLayers++;
+				}
+
+				if (propCount > 1) {
+					Gdx.app.debug("IS_VALID_LEVEL", "Warning: map: " + mapName + ", layer: " + layer.getName()
+							+ ":- Has " + propCount + " properties that change behaviour.");
+				}
+			}
+		}
+
+		for (String key : found.keySet()) {
+			if (!found.get(key).booleanValue()) {
+				Gdx.app.debug("IS_VALID_LEVEL", "Layer not found in map " + mapName + ": " + key);
+				retVal = false;
+			}
+		}
+
+		Gdx.app.debug("IS_VALID_LEVEL", "\n" + mapName + " contains " + otherLayers
+				+ " non-essential layers, including:\n" + dxLayers + " dx-layers,\n" + dyLayers + " dy-layers,\n"
+				+ minOpacityLayers + " minOpacity-layers,\nFor a total of " + propLayers
+				+ " layers which can be changed.\n");
+
+		return retVal;
 	}
 
 	@Override

@@ -15,9 +15,9 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.components.FocusTaker;
 import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
+import com.sgtcodfish.mobiusListing.components.PlayerSprite;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
-import com.sgtcodfish.mobiusListing.components.SpriteRenderable;
 import com.sgtcodfish.mobiusListing.components.Solid;
 import com.sgtcodfish.mobiusListing.components.Velocity;
 
@@ -34,7 +34,7 @@ public class PlayerEntityFactory implements Disposable {
 	public static final String							DEFAULT_SPRITE_LOCATION	= "player/sprites.png";
 
 	private World										world					= null;
-	private HashMap<PlayerAnimationState, Animation>	animationMap			= null;
+	private HashMap<HumanoidAnimationState, Animation>	animationMap			= null;
 
 	public Texture										defaultPlayerTexture	= null;
 
@@ -42,7 +42,7 @@ public class PlayerEntityFactory implements Disposable {
 		this(world, null);
 	}
 
-	public PlayerEntityFactory(World world, HashMap<PlayerAnimationState, Animation> animationMap) {
+	public PlayerEntityFactory(World world, HashMap<HumanoidAnimationState, Animation> animationMap) {
 		this.world = world;
 		if (animationMap != null) {
 			this.animationMap = animationMap;
@@ -114,8 +114,8 @@ public class PlayerEntityFactory implements Disposable {
 		PlayerState ps = world.createComponent(PlayerState.class);
 		e.addComponent(ps);
 
-		SpriteRenderable d = world.createComponent(SpriteRenderable.class);
-		d.renderHandler = new PlayerRenderHandler(animationMap);
+		PlayerSprite d = world.createComponent(PlayerSprite.class);
+		d.animationMap = animationMap;
 		e.addComponent(d);
 
 		PlayerInputListener pil = world.createComponent(PlayerInputListener.class);
@@ -132,7 +132,7 @@ public class PlayerEntityFactory implements Disposable {
 		return e;
 	}
 
-	private HashMap<PlayerAnimationState, Animation> loadDefaultAnimationMap(Texture texture) {
+	private HashMap<HumanoidAnimationState, Animation> loadDefaultAnimationMap(Texture texture) {
 		final float DEFAULT_FRAME_DURATION = 0.1f;
 
 		final float STANDING_FRAME_DURATION = DEFAULT_FRAME_DURATION;
@@ -164,7 +164,7 @@ public class PlayerEntityFactory implements Disposable {
 				regions[4][3]);
 		manipulating.setPlayMode(PlayMode.LOOP);
 
-		return PlayerAnimationState.makeAnimationMapFromAnimations(standing, running, jumping, using, manipulating);
+		return HumanoidAnimationState.makeAnimationMapFromAnimations(standing, running, jumping, using, manipulating);
 	}
 
 	@Override

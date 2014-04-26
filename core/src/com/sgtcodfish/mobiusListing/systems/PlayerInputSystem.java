@@ -10,6 +10,7 @@ import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.Velocity;
+import com.sgtcodfish.mobiusListing.player.HumanoidAnimationState;
 import com.sgtcodfish.mobiusListing.player.PlayerConstants;
 
 /**
@@ -42,14 +43,19 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		// TODO: More portable implementation
 
+		PlayerState ps = animationStateMapper.get(e);
+
 		if (Gdx.input.isKeyPressed(Keys.A)) {
 			velocityMapper.get(e).velocity.x = -PlayerConstants.RUN_VELOCITY;
+			ps.state = HumanoidAnimationState.RUNNING;
 		} else if (Gdx.input.isKeyPressed(Keys.D)) {
 			velocityMapper.get(e).velocity.x = +PlayerConstants.RUN_VELOCITY;
+			ps.state = HumanoidAnimationState.RUNNING;
 		}
 
 		if (Gdx.input.isKeyPressed(Keys.SPACE)) {
 			velocityMapper.get(e).velocity.y = PlayerConstants.JUMP_VELOCITY;
+			ps.state = HumanoidAnimationState.JUMPING;
 		}
 	}
 

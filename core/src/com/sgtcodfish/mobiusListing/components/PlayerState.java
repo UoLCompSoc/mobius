@@ -2,7 +2,7 @@ package com.sgtcodfish.mobiusListing.components;
 
 import com.artemis.Component;
 import com.artemis.Entity;
-import com.sgtcodfish.mobiusListing.player.PlayerAnimationState;
+import com.sgtcodfish.mobiusListing.player.HumanoidAnimationState;
 
 /**
  * Indicates that the current {@link Entity} has a player state attached.
@@ -10,7 +10,7 @@ import com.sgtcodfish.mobiusListing.player.PlayerAnimationState;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class PlayerState implements Component {
-	public PlayerAnimationState	state	= PlayerAnimationState.STANDING;
+	public HumanoidAnimationState	state	= HumanoidAnimationState.STANDING;
 
 	public PlayerState() {
 		reset();
@@ -18,6 +18,6 @@ public class PlayerState implements Component {
 
 	@Override
 	public void reset() {
-		this.state = PlayerAnimationState.STANDING;
+		this.state = HumanoidAnimationState.STANDING;
 	}
 }

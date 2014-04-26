@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
@@ -74,6 +75,10 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 		levelEntityFactory = new LevelEntityFactory(world, batch);
 		currentLevelEntity = levelEntityFactory.generateNextLevelEntity();
+
+		if (currentLevelEntity == null) {
+			throw new GdxRuntimeException("Unable to generate level.");
+		}
 		world.addEntity(currentLevelEntity);
 	}
 
