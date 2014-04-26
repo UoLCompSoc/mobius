@@ -7,11 +7,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.sgtcodfish.mobiusListing.components.Renderable;
-import com.sgtcodfish.mobiusListing.components.Position;
-import com.sgtcodfish.mobiusListing.components.Velocity;
+import com.sgtcodfish.mobiusListing.factories.PlayerEntityFactory;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
 import com.sgtcodfish.mobiusListing.systems.SpriteRenderingSystem;
 
@@ -22,13 +19,13 @@ import com.sgtcodfish.mobiusListing.systems.SpriteRenderingSystem;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class MobiusListingGame extends ApplicationAdapter {
-	private SpriteBatch	batch					= null;
-	private Camera		camera					= null;
-	private Texture		img						= null;
+	private SpriteBatch			batch				= null;
+	private Camera				camera				= null;
 
-	public World		world					= null;
+	public World				world				= null;
 
-	public Entity		exampleTextureEntity	= null;
+	public PlayerEntityFactory	playerEntityFactory	= null;
+	private Entity				playerEntity		= null;
 
 	@Override
 	public void create() {
@@ -37,26 +34,15 @@ public class MobiusListingGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		// camera = new PerspectiveCamera(60.0f, 320.0f, 240.0f);
 		camera = new OrthographicCamera(320.0f, 240.0f);
-		img = new Texture("badlogic.jpg");
 
 		world.setSystem(new MovementSystem());
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
 
 		world.initialize();
 
-		exampleTextureEntity = world.createEntity();
-		exampleTextureEntity.addComponent(world.createComponent(Position.class));
-
-		Velocity v = world.createComponent(Velocity.class);
-		v.velocity.y = 1.0f;
-		exampleTextureEntity.addComponent(v);
-
-		Renderable d = world.createComponent(Renderable.class);
-		d.texture = img;
-
-		exampleTextureEntity.addComponent(d);
-
-		exampleTextureEntity.addToWorld();
+		playerEntityFactory = new PlayerEntityFactory(world);
+		playerEntity = playerEntityFactory.createEntity(5.0f, 5.0f);
+		world.addEntity(playerEntity);
 	}
 
 	@Override

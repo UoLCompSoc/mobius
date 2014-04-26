@@ -46,7 +46,7 @@ public class SpriteRenderingSystem extends EntityProcessingSystem {
 
 		batch.begin();
 
-		batch.draw(d.renderHandler.getFrame(world.getDelta()), p.position.x, p.position.y
+		batch.draw(d.renderHandler.getFrame(world.getDelta()), p.position.x, p.position.y);
 
 		batch.end();
 	}
