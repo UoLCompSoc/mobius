@@ -4,11 +4,15 @@ import java.util.HashMap;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.components.FocusTaker;
 import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
@@ -28,17 +32,37 @@ import com.sgtcodfish.mobiusListing.player.PlayerRenderHandler;
  * 
  * @author Ashley Davis (SgtCoDFish)
  */
-public class PlayerEntityFactory {
-	private World										world			= null;
-	private HashMap<PlayerAnimationState, Animation>	animationMap	= null;
+public class PlayerEntityFactory implements Disposable {
+	public static final String							DEFAULT_SPRITE_LOCATION	= "player/sprites.png";
+
+	private World										world					= null;
+	private HashMap<PlayerAnimationState, Animation>	animationMap			= null;
+
+	public Texture										defaultPlayerTexture	= null;
 
 	public PlayerEntityFactory(World world) {
-		this(world, loadDefaultAnimationMap());
+		this(world, null);
 	}
 
 	public PlayerEntityFactory(World world, HashMap<PlayerAnimationState, Animation> animationMap) {
 		this.world = world;
-		this.animationMap = animationMap;
+		if (animationMap != null) {
+			this.animationMap = animationMap;
+		} else {
+			FileHandle handle = Gdx.files.internal(DEFAULT_SPRITE_LOCATION);
+
+			if (!handle.exists()) {
+				throw new GdxRuntimeException("Could not find " + DEFAULT_SPRITE_LOCATION);
+			}
+
+			defaultPlayerTexture = new Texture(handle);
+
+			if (defaultPlayerTexture == null) {
+				throw new GdxRuntimeException("Could not load default player texture!");
+			}
+
+			this.animationMap = loadDefaultAnimationMap(defaultPlayerTexture);
+		}
 	}
 
 	/**
@@ -75,6 +99,10 @@ public class PlayerEntityFactory {
 	 * @return The created Entity.
 	 */
 	public Entity createEntity(float x, float y, boolean takesFocus) {
+		if (animationMap == null) {
+			throw new GdxRuntimeException("Call to createEntity with invalid animation map.");
+		}
+
 		Entity e = world.createEntity();
 
 		Position p = world.createComponent(Position.class);
@@ -106,7 +134,7 @@ public class PlayerEntityFactory {
 		return e;
 	}
 
-	private static HashMap<PlayerAnimationState, Animation> loadDefaultAnimationMap() {
+	private HashMap<PlayerAnimationState, Animation> loadDefaultAnimationMap(Texture texture) {
 		final float DEFAULT_FRAME_DURATION = 0.1f;
 
 		final float STANDING_FRAME_DURATION = DEFAULT_FRAME_DURATION;
@@ -117,11 +145,10 @@ public class PlayerEntityFactory {
 
 		Animation standing = null, running = null, jumping = null, using = null, manipulating = null;
 
-		Texture defaultPlayerTexture = new Texture("player/sprites.png");
-		defaultPlayerTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		// TODO: More graceful loading than hard coding what regions to use
-		TextureRegion[][] regions = TextureRegion.split(defaultPlayerTexture, 32, 32);
+		TextureRegion[][] regions = TextureRegion.split(texture, 32, 32);
 		standing = new Animation(STANDING_FRAME_DURATION, regions[0][0], regions[0][1], regions[0][2], regions[0][3],
 				regions[0][4], regions[0][5], regions[0][6], regions[0][7]);
 		standing.setPlayMode(PlayMode.LOOP);
@@ -140,5 +167,13 @@ public class PlayerEntityFactory {
 		manipulating.setPlayMode(PlayMode.LOOP);
 
 		return PlayerAnimationState.makeAnimationMapFromAnimations(standing, running, jumping, using, manipulating);
+	}
+
+	@Override
+	public void dispose() {
+		if (defaultPlayerTexture != null) {
+			defaultPlayerTexture.dispose();
+			defaultPlayerTexture = null;
+		}
 	}
 }

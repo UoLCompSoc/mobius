@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sgtcodfish.mobiusListing.factories.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.factories.PlayerEntityFactory;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
@@ -29,6 +30,8 @@ public class MobiusListingGame extends ApplicationAdapter {
 	public PlayerEntityFactory	playerEntityFactory	= null;
 	private Entity				playerEntity		= null;
 
+	public LevelEntityFactory	levelEntityFactory	= null;
+
 	@Override
 	public void create() {
 		world = new World();
@@ -47,6 +50,8 @@ public class MobiusListingGame extends ApplicationAdapter {
 		playerEntityFactory = new PlayerEntityFactory(world);
 		playerEntity = playerEntityFactory.createEntity(5.0f, 5.0f, true);
 		world.addEntity(playerEntity);
+
+		levelEntityFactory = new LevelEntityFactory();
 	}
 
 	@Override
@@ -59,5 +64,29 @@ public class MobiusListingGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		world.process();
+	}
+
+	@Override
+	public void dispose() {
+		if (playerEntityFactory != null) {
+			playerEntityFactory.dispose();
+		}
+
+		if (levelEntityFactory != null) {
+			levelEntityFactory.dispose();
+		}
+
+		if (batch != null) {
+			batch.dispose();
+		}
+
+		if (camera != null) {
+			camera = null;
+		}
+
+		playerEntity = null;
+		if (world != null) {
+			world.dispose();
+		}
 	}
 }
