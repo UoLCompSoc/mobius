@@ -4,8 +4,9 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sgtcodfish.mobiusListing.components.Drawable;
@@ -21,31 +22,34 @@ import com.sgtcodfish.mobiusListing.systems.RenderingSystem;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class MobiusListingGame extends ApplicationAdapter {
-	private SpriteBatch			batch					= null;
-	private PerspectiveCamera	camera					= null;
-	private Texture				img						= null;
+	private SpriteBatch	batch					= null;
+	private Camera		camera					= null;
+	private Texture		img						= null;
 
-	public World				world					= null;
+	public World		world					= null;
 
-	public Entity				exampleTextureEntity	= null;
-
-	public MobiusListingGame() {
-		world = new World();
-	}
+	public Entity		exampleTextureEntity	= null;
 
 	@Override
 	public void create() {
+		world = new World();
+
 		batch = new SpriteBatch();
-		camera = new PerspectiveCamera(60.0f, 320.0f, 240.0f);
+		// camera = new PerspectiveCamera(60.0f, 320.0f, 240.0f);
+		camera = new OrthographicCamera(320.0f, 240.0f);
 		img = new Texture("badlogic.jpg");
 
 		world.setSystem(new MovementSystem());
 		world.setSystem(new RenderingSystem(batch, camera));
 
+		world.initialize();
+
 		exampleTextureEntity = world.createEntity();
 		exampleTextureEntity.addComponent(world.createComponent(Position.class));
-		exampleTextureEntity.addComponent(world.createComponent(Velocity.class));
-		exampleTextureEntity.getComponent(Position.class).position.x = 5.0f;
+
+		Velocity v = world.createComponent(Velocity.class);
+		v.velocity.y = 1.0f;
+		exampleTextureEntity.addComponent(v);
 
 		Drawable d = world.createComponent(Drawable.class);
 		d.texture = img;
@@ -53,21 +57,17 @@ public class MobiusListingGame extends ApplicationAdapter {
 		exampleTextureEntity.addComponent(d);
 
 		exampleTextureEntity.addToWorld();
-
-		world.initialize();
 	}
 
 	@Override
 	public void render() {
 		world.setDelta(Gdx.graphics.getDeltaTime());
 
+		camera.update();
+
 		Gdx.gl.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		world.process();
-
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
 	}
 }

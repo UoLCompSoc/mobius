@@ -21,9 +21,12 @@ public class MovementSystem extends EntityProcessingSystem {
 
 	protected MovementSystem(Filter filter) {
 		super(filter);
+	}
 
-		positionMapper = new ComponentMapper<Position>(Position.class, world);
-		velocityMapper = new ComponentMapper<Velocity>(Velocity.class, world);
+	@Override
+	public void initialize() {
+		positionMapper = world.getMapper(Position.class);
+		velocityMapper = world.getMapper(Velocity.class);
 	}
 
 	@Override

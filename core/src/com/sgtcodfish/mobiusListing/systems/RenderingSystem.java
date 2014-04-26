@@ -31,9 +31,12 @@ public class RenderingSystem extends EntityProcessingSystem {
 
 		this.batch = batch;
 		this.camera = camera;
+	}
 
-		positionMapper = new ComponentMapper<Position>(Position.class, world);
-		drawableMapper = new ComponentMapper<Drawable>(Drawable.class, world);
+	@Override
+	public void initialize() {
+		positionMapper = world.getMapper(Position.class);
+		drawableMapper = world.getMapper(Drawable.class);
 	}
 
 	@Override
