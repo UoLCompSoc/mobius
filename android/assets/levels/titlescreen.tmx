@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="64" height="34" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="map" tilewidth="32" tileheight="32">
+  <image source="../tilesets/tileset.png" width="160" height="160"/>
+ </tileset>
+ <tileset firstgid="26" name="mobius64" tilewidth="64" tileheight="64">
+  <image source="../fontsets/mobius64.png" width="384" height="64"/>
+ </tileset>
+ <tileset firstgid="32" name="upright16" tilewidth="16" tileheight="16">
+  <image source="../fontsets/upright16.png" width="208" height="48"/>
+ </tileset>
+ <tileset firstgid="71" name="upside16" tilewidth="16" tileheight="16">
+  <image source="../fontsets/upside16.png" width="208" height="48"/>
+ </tileset>
+ <layer name="floor" width="64" height="34">
+  <properties>
+   <property name="solid" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzrENwCAMBEDKBImCFGT/TdPg5qUsgO6alzHGtAYAAABwtnfntXNFfe/sO2fUNb+iX/Mj7o24l/3a9/zsqfOcm5H1Tv2jR10JAAAAnO8DfqoB1w==
+  </data>
+ </layer>
+ <layer name="playerspawn" width="64" height="34">
+  <data encoding="base64" compression="zlib">
+   eJztzjENAAAIA7Ad+NeMioWDVkETAAAA+GOuAwAAAABQsG3gAAU=
+  </data>
+ </layer>
+ <layer name="text" width="64" height="34">
+  <properties>
+   <property name="tutorial" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztkd1KQkEUhec50rIfS09/plZqPUHhtUI3keZNEKRoN5HYTSR1E/TArc1ZwjCIcFARZH3wMXvP7DMze45zQgghhBBCzMdGkKeCPO3Fm168FdRlFnYjMYtDjhHcWeVFlkQOluAZrMJysH7p4r4rU9ZCtlm7C/dgFu7DA56Td/E7TursbY9YewxPuM8pR1sr8G5FxmXmJcYF1p4zjnjeBdcj1k/D/6c1eAWvubcQQghh/MI3+MG8y7i3gL2fYMvLH2GH83ewAZvwnnPzYH2MvXwAh/AdjmZ898XvXqj1/sn9kvIAb1zcp/V0y3l7gw5j69l6b3trr7DO+clbPCc4t8/R+vhhbD3Yf/12cf9/iToRQgghhBBCrAv/ylYhwQ==
+  </data>
+ </layer>
+ <layer name="exit" width="64" height="34">
+  <data encoding="base64" compression="zlib">
+   eJztzgENAAAIA6B3sH9XY1w3SEACAAAAAHw17QAAAAAnLC5vABQ=
+  </data>
+ </layer>
+ <layer name="key" width="64" height="34">
+  <data encoding="base64" compression="zlib">
+   eJztzjENAAAIA7ApwL9cTCzhoFXQBAAAAAD+mesAAAAAFC3ysAAP
+  </data>
+ </layer>
+</map>

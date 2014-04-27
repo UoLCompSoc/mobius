@@ -2,6 +2,7 @@ package com.sgtcodfish.mobiusListing;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.artemis.managers.GroupManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -9,7 +10,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
@@ -25,6 +25,10 @@ import com.sgtcodfish.mobiusListing.systems.TiledRenderingSystem;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class MobiusListingGame extends ApplicationAdapter {
+	public enum MobiusState {
+		TITLE_SCREEN, PLAYING;
+	}
+
 	public static boolean		DEBUG				= false;
 
 	private SpriteBatch			batch				= null;
@@ -36,7 +40,6 @@ public class MobiusListingGame extends ApplicationAdapter {
 	private Entity				playerEntity		= null;
 
 	public LevelEntityFactory	levelEntityFactory	= null;
-	private Entity				currentLevelEntity	= null;
 
 	public MobiusListingGame() {
 		this(false);
@@ -66,6 +69,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
+		world.setManager(new GroupManager());
 
 		world.initialize();
 
@@ -74,12 +78,13 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world.addEntity(playerEntity);
 
 		levelEntityFactory = new LevelEntityFactory(world, batch);
-		currentLevelEntity = levelEntityFactory.generateNextLevelEntity();
+		nextLevel();
+	}
 
-		if (currentLevelEntity == null) {
-			throw new GdxRuntimeException("Unable to generate level.");
+	protected void nextLevel() {
+		for (Entity e : levelEntityFactory.getNextLevelEntityList()) {
+			world.addEntity(e);
 		}
-		world.addEntity(currentLevelEntity);
 	}
 
 	@Override
@@ -88,10 +93,15 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 		camera.update();
 
-		Gdx.gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		world.process();
+	}
+
+	@Override
+	public void resume() {
+
 	}
 
 	@Override

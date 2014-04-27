@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="32" height="17" tilewidth="32" tileheight="32">
- <tileset firstgid="1" name="map" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="Map" tilewidth="32" tileheight="32">
   <image source="../tilesets/tileset.png" width="160" height="160"/>
  </tileset>
  <layer name="floor" width="32" height="17">
@@ -8,7 +8,7 @@
    <property name="solid" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJxjYBgFgxWwALE4EDMOtEMIAELuhMljw6NgYAEobniBWAyIOYCYE0qD+OJQGiTPBRUXRJJHpkFqhaDyoHTAzoCIdzEkfTA9jFD5UTCwAFe+pAUeBaMAHQAAbzcE2g==
+   eJxjYBgFgxWwALE4EDMOtEMIAELuhMljw6NgYIEQEPMCsRgQcwAxJ5QG8cWhNEieCyouiCSPTItDzQLJg9IBOwMi3sWQ9MH0cELNHAUDC3DlS1rgUTAK0AEA5o8E9g==
   </data>
  </layer>
  <layer name="exit" width="32" height="17">
@@ -47,10 +47,10 @@
  </layer>
  <layer name="wall2" width="32" height="17">
   <properties>
-   <property name="dx" value="-2"/>
+   <property name="dy" value="6"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjAL6A7YBtl9ggO3nHmD7R8EoGGgAAHoEACI=
+   eJxjYBgFo2AUjIKRB9gG2H7uAbZ/FIyCgQYAPsQAEg==
   </data>
  </layer>
  <layer name="playerspawn" width="32" height="17">

@@ -1,0 +1,27 @@
+package com.sgtcodfish.mobiusListing.components;
+
+import com.artemis.Component;
+import com.badlogic.gdx.graphics.Texture;
+
+/**
+ * @author Ashley Davis (SgtCoDFish)
+ */
+public class PlatformSprite implements Component {
+	public int							size		= 0;
+	public Texture						texture		= null;
+	public PlatformSpriteOrientation	orientation	= PlatformSpriteOrientation.NONE;
+
+	@Override
+	public void reset() {
+		size = 0;
+		orientation = PlatformSpriteOrientation.NONE;
+		if (texture != null) {
+			texture = null;
+			texture.dispose();
+		}
+	}
+
+	public enum PlatformSpriteOrientation {
+		NONE, HORIZONTAL, VERTICAL;
+	}
+}

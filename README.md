@@ -6,14 +6,16 @@ LD29 - Theme "Beneath the Surface"
 TODO
 ----
 
-- PlatformEntityFactory
+- Platform input listeners
 
-- PlayerInput Component
+- PlatformEntityFactory (folded into LevelEntityFactory)
 
-- Wrapping around
+- PlayerInput Component (needs improving)
 
-- Collisions
+- Wrapping around (NYI)
 
-- Music
+- Collisions (NYI)
 
-- Android
+- Music (NYI)
+
+- Android (not supported for LD)
