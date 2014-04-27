@@ -14,6 +14,8 @@ import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
+import com.sgtcodfish.mobiusListing.systems.PlatformInputSystem;
+import com.sgtcodfish.mobiusListing.systems.PlatformRenderingSystem;
 import com.sgtcodfish.mobiusListing.systems.PlayerInputSystem;
 import com.sgtcodfish.mobiusListing.systems.SpriteRenderingSystem;
 import com.sgtcodfish.mobiusListing.systems.TiledRenderingSystem;
@@ -61,13 +63,14 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world = new World();
 
 		batch = new SpriteBatch();
-		// camera = new PerspectiveCamera(60.0f, 320.0f, 240.0f);
-		camera = new OrthographicCamera(320.0f, 240.0f);
+		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		world.setSystem(new PlayerInputSystem());
+		world.setSystem(new PlatformInputSystem());
 		world.setSystem(new MovementSystem());
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));
+		world.setSystem(new PlatformRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
 		world.setManager(new GroupManager());
 

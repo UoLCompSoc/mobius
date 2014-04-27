@@ -41,8 +41,13 @@ public class TiledRenderingSystem extends EntityProcessingSystem {
 	protected void process(Entity e) {
 		// Position p = positionMapper.get(e);
 		TiledRenderable tr = tiledRenderableMapper.get(e);
+
+		if (tr.layerArray == null) {
+			tr.initLayerArray();
+		}
+
 		tr.renderer.setView((OrthographicCamera) camera);
-		tr.renderer.render();
+		tr.renderer.render(tr.layerArray);
 	}
 
 	@Override

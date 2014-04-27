@@ -252,6 +252,9 @@ public class LevelEntityFactory implements Disposable {
 		platformSprite.texture = texture;
 		platformSprite.size = platSize;
 		platformSprite.orientation = orientation;
+		platformSprite.rectangle = new Rectangle(platformRect);
+		platformSprite.rectangle.width *= PLATFORM_TILE_WIDTH;
+		platformSprite.rectangle.height *= PLATFORM_TILE_HEIGHT;
 
 		e.addComponent(position);
 		e.addComponent(platformSprite);
