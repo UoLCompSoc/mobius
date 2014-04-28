@@ -8,8 +8,6 @@ TODO
 
 - Platform input listeners
 
-- PlatformEntityFactory (folded into LevelEntityFactory)
-
 - PlayerInput Component (needs improving)
 
 - Wrapping around (NYI)
