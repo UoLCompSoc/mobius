@@ -71,7 +71,7 @@
    <property name="minOpacity" value="0.25"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztwQENAAAAwqD3T20PBxQAAADAtwERAAAB
+   eJztzzERADAMxLBMWbqUP9rC+F4iIbCr/tXpgLCbDgjb/n/SAQAAAIM840IAMg==
   </data>
  </layer>
  <layer name="wall5" width="64" height="17">
@@ -79,7 +79,7 @@
    <property name="minOpacity" value="0.25"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztwQENAAAAwqD3T20PBxQAAADAtwERAAAB
+   eJztz7ENADAIBDEqGprsP23GeCHsCe6qduh0QNhLB4Rd/590AAAAwHIf4PYAMg==
   </data>
  </layer>
  <layer name="wall6" width="64" height="17">
@@ -87,7 +87,7 @@
    <property name="minOpacity" value="0.25"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztz6ERADAMxLCgkJLuP21XeNhLJGTqqn910JPdoCfb/n+CBgAAIPMAgQAAlA==
+   eJztz7ENADAIBDEqGprsP23GeCHsCe6q9ul0QNhLB4Rd/590AAAAwEIf3qoAMg==
   </data>
  </layer>
  <layer name="platform2" width="64" height="17">
