@@ -9,13 +9,13 @@ Instructions
 
 Controls
 ----
-- D to run
+- D - run
 
-- Space to jump
+- Space - jump
 
-- P to reset a level
+- P - Reset a level
 
-- W to use a the exit (when holding the key)
+- W - Use the exit (when holding the key)
 
 - Left click on red objects to interact with them
 
