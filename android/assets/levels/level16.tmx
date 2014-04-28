@@ -11,12 +11,12 @@
    <property name="solid" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJxjYBjZgBOIBaE0FxCLQ/kgWmgA3TVYAACH+AB/
+   eJxjYKANYAFicSLUsULVMiLpY0SSZyegH5c8KwF5dqgaGM0JxFwMEDcLAjEPVI6HgBkMUDWkuA2bPLYwwGUuMhBnQA0vagMAHNcBDQ==
   </data>
  </layer>
  <layer name="exit" width="8" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYEAF/AyjYBQgAAAhEAAQ
+   eJxjYBgF5ADhgXYAnQAAE1gAFA==
   </data>
  </layer>
  <layer name="playerspawn" width="8" height="17">
@@ -31,23 +31,7 @@
  </layer>
  <layer name="key" width="8" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFIwnwkageAATAAA8=
-  </data>
- </layer>
- <layer name="platform1" width="8" height="17" opacity="0.39">
-  <properties>
-   <property name="minOpacity" value="0.25"/>
-  </properties>
-  <data encoding="base64" compression="zlib">
-   eJxjYCANcJMoTgngxsIm1h5auIdYe8h1IyluxhY2pJpBDAAAlhwAkA==
-  </data>
- </layer>
- <layer name="platform2" width="8" height="17" opacity="0.48">
-  <properties>
-   <property name="minOpacity" value="0.25"/>
-  </properties>
-  <data encoding="base64" compression="zlib">
-   eJxjYCAesJEoTgnAZiYt7BloQC0/oZtDjLnEqAEAM0AAMQ==
+   eJxjYBgFwx3wUaAXAAVoAA8=
   </data>
  </layer>
 </map>
