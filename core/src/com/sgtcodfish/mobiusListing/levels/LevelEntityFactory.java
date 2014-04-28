@@ -24,6 +24,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.WorldConstants;
+import com.sgtcodfish.mobiusListing.components.Collectible;
 import com.sgtcodfish.mobiusListing.components.DxLayer;
 import com.sgtcodfish.mobiusListing.components.DyLayer;
 import com.sgtcodfish.mobiusListing.components.FadableLayer;
@@ -32,6 +33,7 @@ import com.sgtcodfish.mobiusListing.components.PlatformInputListener;
 import com.sgtcodfish.mobiusListing.components.PlatformSprite;
 import com.sgtcodfish.mobiusListing.components.PlatformSprite.PlatformSpriteOrientation;
 import com.sgtcodfish.mobiusListing.components.Position;
+import com.sgtcodfish.mobiusListing.components.Solid;
 import com.sgtcodfish.mobiusListing.components.TiledRenderable;
 
 /**
@@ -185,7 +187,6 @@ public class LevelEntityFactory implements Disposable {
 		e.addComponent(r);
 
 		e.disable();
-		e.addToWorld();
 		return e;
 	}
 
@@ -251,9 +252,33 @@ public class LevelEntityFactory implements Disposable {
 			e.addComponent(fadableLayer);
 		}
 
-		e.addToWorld();
 		e.disable();
 		return e;
+	}
+
+	protected Entity generateKeyEntity(TiledMapTileLayer layer, String keyName) {
+		Vector2 keyLoc = findFirstCell(layer);
+
+		if (keyLoc == null) {
+			throw new IllegalArgumentException("Could not find key in layer \"" + layer.getName() + "\".");
+		} else {
+			Entity e = world.createEntity();
+
+			Position position = world.createComponent(Position.class);
+			position.position.x = keyLoc.x * layer.getTileWidth();
+			position.position.y = keyLoc.y * layer.getTileHeight();
+			e.addComponent(position);
+
+			Solid solid = world.createComponent(Solid.class);
+			e.addComponent(solid);
+
+			Collectible collectible = world.createComponent(Collectible.class);
+			collectible.name = keyName;
+			e.addComponent(collectible);
+
+			e.disable();
+			return e;
+		}
 	}
 
 	/**
@@ -421,7 +446,8 @@ public class LevelEntityFactory implements Disposable {
 	 * @param layer
 	 *        The layer whose cell we'll find.
 	 * @return An initialised {@link Vector2} with the x and y coordinates (in
-	 *         tile coordinates), or null if the layer is empty.
+	 *         tile coordinates), or null if the layer is empty. x is right, y
+	 *         is down.
 	 */
 	protected static Vector2 findFirstCell(TiledMapTileLayer layer) {
 		for (int y = 0; y < layer.getHeight(); y++) {

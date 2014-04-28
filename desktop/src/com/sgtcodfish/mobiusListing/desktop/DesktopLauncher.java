@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.width = 1024;
 		config.height = 768;
 		config.resizable = false;
+		// config.addIcon("", FileType.Internal);
 
 		new LwjglApplication(new MobiusListingGame(true), config);
 	}
