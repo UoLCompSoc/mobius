@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import com.artemis.managers.GroupManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -28,6 +27,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.Item;
 import com.sgtcodfish.mobiusListing.Item.ItemType;
+import com.sgtcodfish.mobiusListing.MobiusGroupManager;
 import com.sgtcodfish.mobiusListing.TerrainCollisionMap;
 import com.sgtcodfish.mobiusListing.WorldConstants;
 import com.sgtcodfish.mobiusListing.components.Collectable;
@@ -35,6 +35,7 @@ import com.sgtcodfish.mobiusListing.components.DxLayer;
 import com.sgtcodfish.mobiusListing.components.DyLayer;
 import com.sgtcodfish.mobiusListing.components.FadableLayer;
 import com.sgtcodfish.mobiusListing.components.Interactable;
+import com.sgtcodfish.mobiusListing.components.Linked;
 import com.sgtcodfish.mobiusListing.components.Opacity;
 import com.sgtcodfish.mobiusListing.components.PlatformInputListener;
 import com.sgtcodfish.mobiusListing.components.PlatformSprite;
@@ -102,7 +103,8 @@ public class LevelEntityFactory implements Disposable {
 		} else {
 			if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
 				Gdx.app.debug("NEXT_LEVEL", "Level's manager contains "
-						+ world.getManager(GroupManager.class).getEntities(levels.get(levelNumber)).size + " entities.");
+						+ world.getManager(MobiusGroupManager.class).getEntities(levels.get(levelNumber)).size
+						+ " entities.");
 			}
 
 			return true;
@@ -164,11 +166,11 @@ public class LevelEntityFactory implements Disposable {
 	}
 
 	protected Array<Entity> getCurrentLevelEntities() {
-		return world.getManager(GroupManager.class).getEntities(getCurrentLevelGroupName());
+		return world.getManager(MobiusGroupManager.class).getEntities(getCurrentLevelGroupName());
 	}
 
 	protected Array<Entity> getCurrentMirroredLevelEntities() {
-		return world.getManager(GroupManager.class).getEntities(getCurrentLevelMirrorGroupName());
+		return world.getManager(MobiusGroupManager.class).getEntities(getCurrentLevelMirrorGroupName());
 	}
 
 	/**
@@ -215,9 +217,7 @@ public class LevelEntityFactory implements Disposable {
 	protected void loadLevel(TmxMapLoader loader, FileHandle handle) {
 		TiledMap map = loader.load(handle.path());
 
-		GroupManager groupManager = world.getManager(GroupManager.class);
 		String groupName = handle.name();
-		String mirrorGroupName = groupName + MIRROR_GROUP_EXTENSION;
 
 		Gdx.app.debug("LOAD_LEVELS", "-----");
 		Gdx.app.debug("LOAD_LEVELS", "Loading " + handle.name() + ".");
@@ -232,6 +232,7 @@ public class LevelEntityFactory implements Disposable {
 		TiledMapTileLayer floorLayer = ((TiledMapTileLayer) (map.getLayers().get("floor")));
 		float mapWidth = floorLayer.getTileWidth() * floorLayer.getWidth();
 		float mapHeight = floorLayer.getTileHeight() * floorLayer.getHeight();
+		float yFlip = mapHeight;
 
 		Gdx.app.debug("LOAD_LEVELS", "Level details:\nWidth in tiles (w, h): (" + floorLayer.getWidth() + ", "
 				+ floorLayer.getHeight() + ")\nTile dimensions in pixels (w, h): (" + floorLayer.getTileWidth() + ", "
@@ -240,10 +241,8 @@ public class LevelEntityFactory implements Disposable {
 
 		Entity level = generateLevelEntity(map, 0.0f, 0.0f);
 		Entity mirrorLevel = generateLevelEntity(invertedMap, mapWidth, 0.0f);
-		makeMirrored(mirrorLevel, level, floorLayer);
 
-		groupManager.add(level, groupName);
-		groupManager.add(mirrorLevel, mirrorGroupName);
+		positionLinkAndCommitToGroup(level, mirrorLevel, mapWidth, yFlip, groupName);
 
 		Gdx.app.debug("LOAD_LEVELS", "Generated regular and mirror level entities for " + handle.name()
 				+ " - id reg = " + level.id + ", mirror = " + mirrorLevel.id);
@@ -253,17 +252,26 @@ public class LevelEntityFactory implements Disposable {
 
 			if (isInteractableLayer(layer)) {
 				Gdx.app.debug("LOAD_LEVELS", "Loading interactible layer: " + layer.getName());
-				groupManager.add(generateInteractablePlatformEntity(layer), groupName);
+				Entity platformEntity = generateInteractablePlatformEntity(layer, false, 0.0f, 0.0f);
+				Entity mirroredPlatformEntity = generateInteractablePlatformEntity(layer, true, mapWidth, 0.0f);
+
+				positionLinkAndCommitToGroup(platformEntity, mirroredPlatformEntity, mapWidth, yFlip, groupName);
 
 			} else if (isKeyLayer(layer)) {
 				Gdx.app.debug("LOAD_LEVELS", "Loading key layer.");
 				String firstChar = ("" + handle.nameWithoutExtension().charAt(0)).toUpperCase();
 				String keyName = firstChar + handle.nameWithoutExtension().substring(1) + " Key";
-				groupManager.add(generateKeyEntity(layer, keyName), groupName);
+				String mirrorKeyName = keyName + MIRROR_GROUP_EXTENSION;
+
+				Entity keyEntity = generateKeyEntity(layer, keyName, false, 0.0f, 0.0f);
+				Entity mirroredKeyEntity = generateKeyEntity(layer, mirrorKeyName, true, mapWidth, 0.0f);
+				positionLinkAndCommitToGroup(keyEntity, mirroredKeyEntity, mapWidth, yFlip, groupName);
 
 			} else if (isExitLayer(layer)) {
 				Gdx.app.debug("LOAD_LEVELS", "Loading exit layer.");
-				groupManager.add(generateExitEntity(layer), groupName);
+				Entity exitEntity = generateExitEntity(layer, false, 0.0f, 0.0f);
+				Entity mirroredExitEntity = generateExitEntity(layer, true, mapWidth, 0.0f);
+				positionLinkAndCommitToGroup(exitEntity, mirroredExitEntity, mapWidth, yFlip, groupName);
 
 			} else if (isSpawnLayer(layer)) {
 				Gdx.app.debug("LOAD_LEVELS", "Loading player spawn layer.");
@@ -289,22 +297,12 @@ public class LevelEntityFactory implements Disposable {
 		Gdx.app.debug("LOAD_LEVELS", "-----\n");
 	}
 
-	/**
-	 * <p>
-	 * Makes an entity "mirrored" mirror "link", meaning its Position
-	 * component's y component is mirrored and the sprite is drawn flipped.
-	 * </p>
-	 * 
-	 * @param mirrored
-	 *        The (already initialised) mirrored entity to be modified.
-	 * @param link
-	 *        The entity "mirrored" is based off.
-	 * @param mirrorLayer
-	 *        The layer whose dimensions are used to mirror the position
-	 *        changes.
-	 */
-	protected void makeMirrored(Entity mirrored, Entity link, TiledMapTileLayer mirrorLayer) {
+	protected void positionLinkAndCommitToGroup(Entity parent, Entity child, float xOffset, float yFlip,
+			String groupName) {
+		Linked.makePositionLink(world, parent, child, yFlip);
 
+		world.getManager(MobiusGroupManager.class).add(parent, groupName);
+		world.getManager(MobiusGroupManager.class).add(child, groupName + MIRROR_GROUP_EXTENSION);
 	}
 
 	protected Entity generateLevelEntity(TiledMap map, float x, float y) {
@@ -328,7 +326,8 @@ public class LevelEntityFactory implements Disposable {
 		return e;
 	}
 
-	protected Entity generateInteractablePlatformEntity(TiledMapTileLayer layer) {
+	protected Entity generateInteractablePlatformEntity(TiledMapTileLayer layer, boolean mirrored, float xOffset,
+			float yOffset) {
 		Entity e = world.createEntity();
 
 		MapProperties properties = layer.getProperties();
@@ -351,11 +350,12 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		Position position = world.createComponent(Position.class);
-		position.position.x = platformRect.x;
-		position.position.y = platformRect.y;
+		position.position.x = platformRect.x + xOffset;
+		position.position.y = platformRect.y + yOffset;
 
 		PlatformSprite platformSprite = world.createComponent(PlatformSprite.class);
 		platformSprite.setTexture(texture);
+		platformSprite.mirrored = mirrored;
 		platformSprite.spriteWidth = texture.getWidth();
 		platformSprite.spriteHeight = texture.getHeight();
 		platformSprite.size = platSize;
@@ -397,7 +397,8 @@ public class LevelEntityFactory implements Disposable {
 		return e;
 	}
 
-	protected Entity generateKeyEntity(TiledMapTileLayer layer, String keyName) {
+	protected Entity generateKeyEntity(TiledMapTileLayer layer, String keyName, boolean mirrored, float xOffset,
+			float yOffset) {
 		Vector2 keyLoc = findFirstCell(layer);
 
 		if (keyLoc == null) {
@@ -406,8 +407,8 @@ public class LevelEntityFactory implements Disposable {
 			Entity e = world.createEntity();
 
 			Position position = world.createComponent(Position.class);
-			position.position.x = keyLoc.x * layer.getTileWidth();
-			position.position.y = keyLoc.y * layer.getTileHeight();
+			position.position.x = keyLoc.x * layer.getTileWidth() + xOffset;
+			position.position.y = keyLoc.y * layer.getTileHeight() + yOffset;
 			e.addComponent(position);
 
 			Collectable collectable = world.createComponent(Collectable.class);
@@ -418,6 +419,7 @@ public class LevelEntityFactory implements Disposable {
 			staticSprite.textureRegion = layer.getCell((int) keyLoc.x, (int) keyLoc.y).getTile().getTextureRegion();
 			staticSprite.spriteWidth = staticSprite.textureRegion.getRegionWidth();
 			staticSprite.spriteHeight = staticSprite.textureRegion.getRegionHeight();
+			staticSprite.mirrored = mirrored;
 			e.addComponent(staticSprite);
 
 			Solid solid = world.createComponent(Solid.class);
@@ -431,7 +433,7 @@ public class LevelEntityFactory implements Disposable {
 		}
 	}
 
-	protected Entity generateExitEntity(TiledMapTileLayer layer) {
+	protected Entity generateExitEntity(TiledMapTileLayer layer, boolean mirrored, float xOffset, float yOffset) {
 		Vector2 exitLoc = findFirstCell(layer);
 
 		if (exitLoc == null) {
@@ -440,8 +442,8 @@ public class LevelEntityFactory implements Disposable {
 			Entity e = world.createEntity();
 
 			Position p = world.createComponent(Position.class);
-			p.position.x = exitLoc.x * layer.getTileWidth();
-			p.position.y = exitLoc.y * layer.getTileHeight();
+			p.position.x = exitLoc.x * layer.getTileWidth() + xOffset;
+			p.position.y = exitLoc.y * layer.getTileHeight() + xOffset;
 			e.addComponent(p);
 
 			Interactable i = world.createComponent(Interactable.class);
@@ -451,6 +453,7 @@ public class LevelEntityFactory implements Disposable {
 			s.textureRegion = layer.getCell((int) exitLoc.x, (int) exitLoc.y).getTile().getTextureRegion();
 			s.spriteWidth = s.textureRegion.getRegionWidth();
 			s.spriteHeight = s.textureRegion.getRegionHeight();
+			s.mirrored = mirrored;
 			e.addComponent(s);
 
 			e.addToWorld();

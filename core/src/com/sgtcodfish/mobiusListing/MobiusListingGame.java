@@ -3,7 +3,6 @@ package com.sgtcodfish.mobiusListing;
 import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
-import com.artemis.managers.GroupManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.sgtcodfish.mobiusListing.components.Inventory;
+import com.sgtcodfish.mobiusListing.components.Linked;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
@@ -89,7 +89,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world.setSystem(new TiledRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
 
-		world.setManager(new GroupManager());
+		world.setManager(new MobiusGroupManager());
 
 		world.initialize();
 
@@ -197,7 +197,13 @@ public class MobiusListingGame extends ApplicationAdapter {
 			String components = "";
 
 			for (Component c : e.getComponents()) {
-				components += c.getClass().getSimpleName() + delim;
+				components += c.getClass().getSimpleName();
+
+				if (c.getClass() == Linked.class) {
+					components += "->" + e.getComponent(Linked.class).linkedEntity.id;
+				}
+
+				components += delim;
 			}
 
 			components = components.substring(0, components.length() - delim.length());
