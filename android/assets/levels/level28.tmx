@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="5" height="17" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="map" tilewidth="32" tileheight="32">
+  <image source="../../../../tilesets/tileset.png" width="160" height="160"/>
+ </tileset>
+ <tileset firstgid="26" name="numbers" tilewidth="32" tileheight="32">
+  <image source="../../../../fontsets/numbers.PNG" width="320" height="32"/>
+ </tileset>
+ <layer name="floor" width="5" height="17">
+  <properties>
+   <property name="solid" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYCAdsACxOBn6YIAUvbxAzAXEnEiYHkAcDTOSoBcAaMgAwg==
+  </data>
+ </layer>
+ <layer name="levelnumber" width="5" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgYII2EpaB4uAAAb4QAhg==
+  </data>
+ </layer>
+ <layer name="playerspawn" width="5" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBg8gHmgHUAlAAADrAAE
+  </data>
+ </layer>
+ <layer name="exit" width="5" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFpAJhAvIAA7QAFA==
+  </data>
+ </layer>
+ <layer name="key" width="5" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBhcgG+gHUAFAAAMDAAP
+  </data>
+ </layer>
+ <layer name="platform1" width="5" height="17">
+  <properties>
+   <property name="dx" value="5"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBg+gAmImYFYdIDdAQAOcAAb
+  </data>
+ </layer>
+ <layer name="platform2" width="5" height="17">
+  <properties>
+   <property name="dx" value="4"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBh5gAmImYFYlEbmAwAKYAAb
+  </data>
+ </layer>
+</map>
