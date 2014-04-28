@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="64" height="17" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="map" tilewidth="32" tileheight="32">
+  <image source="../../../../tilesets/tileset.png" width="160" height="160"/>
+ </tileset>
+ <tileset firstgid="26" name="mobius64" tilewidth="32" tileheight="32">
+  <image source="../../../../fontsets/mobius64.png" width="384" height="64"/>
+ </tileset>
+ <tileset firstgid="50" name="upright32" tilewidth="32" tileheight="32">
+  <image source="../../../../fontsets/upright32.png" width="160" height="160"/>
+ </tileset>
+ <tileset firstgid="75" name="upside32" tilewidth="32" tileheight="32">
+  <image source="../../../../fontsets/upside32.png" width="160" height="160"/>
+ </tileset>
+ <layer name="floor" width="64" height="17">
+  <properties>
+   <property name="solid" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztjUsKACEMQ112BBe6sPe/6YyQQpgr+B6Ekn7S1gAAAOA2Uuqfpmr5ofqod2poL2yeprDe0M20Wcr/b5d2u/1Z5o+2+vW7srb8tp3KCvu7pGnZAAAAcB8vZR0Drw==
+  </data>
+ </layer>
+ <layer name="text" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztztkNgkAYRWHqEBRRcRcVXFBBQS0Al/5r8TxQwkwmJvck39vkn+t5Silltw58BOiihxB9RBhgiBFiNxOtNsYEU8wwxwJLrJBgjQ22jjamyCzcPSLHCWdcsMMeBxTtuxJX3FAZ/L/GHQ88Dd5VSrmvwQtvfPB1O0cppdQf9AOvlwmA
+  </data>
+ </layer>
+ <layer name="playerspawn" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztzjEBAAAIA6BFsH9aW8xDSEACAD/NdQAAgJoFsMAAEQ==
+  </data>
+ </layer>
+ <layer name="exit" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztzgEJAAAMA6B1eP+ujzEGmsAEAIBV1w4AwIgHmdwAFA==
+  </data>
+ </layer>
+ <layer name="key" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztzrENgCAABVEmcDHUDlRQ9h/Dm0ASLGjuJdf+/BAkSZL0ZZl9YJJIK220D24kynTQSRcVqnTTQ+33U0mS+l5mVQTA
+  </data>
+ </layer>
+</map>
