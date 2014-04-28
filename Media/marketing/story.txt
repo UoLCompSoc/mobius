@@ -1,0 +1,6 @@
+Story (Non mathematical translation below…)
+
+You play as Blip who is tasked with replacing all missing processors in his neighbourhood motherboard.  Blips universe is not like ours, it is homotopic to a circle, however is constructed from the identification of a square with opposing directions on one set of parallel sides.  This construction gives us a non orientable surface which is self-intersecting in the plane, with right-handed chirality when considered embedded in a Euclidian domain.  The single boundary of the surface that Blip lives on makes the smallest of motherboards infinitely long with periodicity 2.  If you have a hard time visualising this, simply consider it as the nontrivial bundle over the circle with the bundle being the unit interval.
+
+You play as Blip who is tasked with replacing all missing processors in his neighbourhood motherboard. 
+Blip is not of this world, he lives in non-orientable universe, known to us as a möbius strip, which makes his job sometimes require a bit of forward thinking…
