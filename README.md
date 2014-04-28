@@ -6,11 +6,7 @@ LD29 - Theme "Beneath the Surface"
 TODO
 ----
 
-- Window icons (128x128, 32x32, 16x16)
-
-- Platform input listeners
-
-- PlayerInput Component (needs improving)
+- PlayerInput Component (needs improving) + states
 
 - Wrapping around (NYI)
 

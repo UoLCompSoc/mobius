@@ -16,7 +16,7 @@ import com.badlogic.gdx.maps.MapProperties;
 public class DyLayer extends MovingLayer {
 	@Override
 	protected void move(Position p, int degree) {
-		p.position.y += degree * layer.getTileHeight();
+		p.position.y -= degree * layer.getTileHeight();
 	}
 
 	@Override

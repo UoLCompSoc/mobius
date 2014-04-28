@@ -146,7 +146,7 @@ public class LevelEntityFactory implements Disposable {
 			FileHandle handle = Gdx.files.internal(s);
 
 			if (!handle.exists()) {
-				Gdx.app.debug("LOAD_LEVELS_LIST", "Level does not exist: " + s + " when loading from list. Skipping.");
+				Gdx.app.debug("LOAD_LEVELS", "Level does not exist: " + s + " when loading from list. Skipping.");
 				continue;
 			}
 
@@ -154,6 +154,9 @@ public class LevelEntityFactory implements Disposable {
 
 			GroupManager groupManager = world.getManager(GroupManager.class);
 			String groupName = handle.name();
+
+			Gdx.app.debug("LOAD_LEVELS", "-----");
+			Gdx.app.debug("LOAD_LEVELS", "Loading " + handle.name() + ".");
 
 			if (!isValidLevel(map, handle.name())) {
 				Gdx.app.debug("LOAD_LEVELS", handle.name() + " is an invalid level format. Skipping.");
@@ -182,6 +185,7 @@ public class LevelEntityFactory implements Disposable {
 			}
 
 			levels.add(groupName);
+			Gdx.app.debug("LOAD_LEVELS", "-----\n");
 		}
 	}
 
@@ -664,8 +668,8 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		Gdx.app.debug("IS_VALID_LEVEL", "Contains " + otherLayers + " non-essential layers, including:\n" + dxLayers
-				+ " dx-layers,\n" + dyLayers + " dy-layers,\n" + minOpacityLayers + " fadable-layers,\nFor a total of "
-				+ propLayers + " layers which can be changed.\n");
+				+ " dx-layers,\n" + dyLayers + " dy-layers,\n" + minOpacityLayers + " fadable-layers,\nfor a total of "
+				+ propLayers + " layers which can be changed.");
 
 		return retVal;
 	}

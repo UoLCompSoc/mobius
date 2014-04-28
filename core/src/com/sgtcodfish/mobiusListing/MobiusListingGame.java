@@ -70,7 +70,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		world.setSystem(new PlayerInputSystem());
-		world.setSystem(new PlatformInputSystem());
+		world.setSystem(new PlatformInputSystem(camera));
 		world.setSystem(new MovementSystem());
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));

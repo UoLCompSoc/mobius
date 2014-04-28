@@ -10,12 +10,12 @@ public class FadableLayer extends InteractableLayer<Opacity> {
 	protected final float	BECOMING_OPAQUE			= 1.0f;
 	protected final float	BECOMING_TRANSPARENT	= -1.0f;
 
-	protected float			minOpacity				= WorldConstants.GLOBAL_SOLID_OPACITY;
+	protected float			minOpacity				= WorldConstants.GLOBAL_PASSTHROUGH_OPACITY;
 	protected float			opacityDirection		= BECOMING_TRANSPARENT;
 
 	@Override
 	public void interact(Opacity c, int degree) {
-		c.opacity += opacityDirection * (degree * 0.05f);
+		c.opacity += opacityDirection * degree;
 
 		if (c.opacity <= minOpacity) {
 			c.opacity = minOpacity;
