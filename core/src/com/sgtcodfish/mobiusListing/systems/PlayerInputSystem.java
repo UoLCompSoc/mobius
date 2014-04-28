@@ -47,13 +47,17 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 			ps.state = HumanoidAnimationState.STANDING;
 		} else if (Gdx.app.getLogLevel() == Application.LOG_DEBUG && Gdx.input.isKeyPressed(Keys.A)) {
 			velocityMapper.get(e).velocity.x = -PlayerConstants.RUN_VELOCITY;
-			ps.state = HumanoidAnimationState.RUNNING;
-		} else if (Gdx.input.isKeyPressed(Keys.D)) {
-			velocityMapper.get(e).velocity.x = +PlayerConstants.RUN_VELOCITY;
-			ps.state = HumanoidAnimationState.RUNNING;
+			if (ps.state != HumanoidAnimationState.JUMPING)
+				ps.state = HumanoidAnimationState.RUNNING;
 		}
 
-		if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+		if (Gdx.input.isKeyPressed(Keys.D)) {
+			velocityMapper.get(e).velocity.x = +PlayerConstants.RUN_VELOCITY;
+			if (ps.state != HumanoidAnimationState.JUMPING)
+				ps.state = HumanoidAnimationState.RUNNING;
+		}
+
+		if (Gdx.input.isKeyPressed(Keys.SPACE) && ps.state != HumanoidAnimationState.JUMPING) {
 			velocityMapper.get(e).velocity.y = PlayerConstants.JUMP_VELOCITY;
 			ps.state = HumanoidAnimationState.JUMPING;
 		}

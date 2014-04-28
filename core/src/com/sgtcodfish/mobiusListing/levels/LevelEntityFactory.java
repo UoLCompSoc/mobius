@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.sgtcodfish.mobiusListing.CollisionMap;
 import com.sgtcodfish.mobiusListing.WorldConstants;
 import com.sgtcodfish.mobiusListing.components.Collectible;
 import com.sgtcodfish.mobiusListing.components.DxLayer;
@@ -46,20 +47,22 @@ import com.sgtcodfish.mobiusListing.components.TiledRenderable;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class LevelEntityFactory implements Disposable {
-	public static final String		DEFAULT_LEVEL_FOLDER	= "levels/";
-	public static final String[]	MAP_NAMES				= { "titlescreen.tmx", "level1.tmx", "level2.tmx",
-			"level3.tmx", "level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx",
-			"level10.tmx", "level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level15.tmx", "level16.tmx" };
+	public static final String				DEFAULT_LEVEL_FOLDER	= "levels/";
+	public static final String[]			MAP_NAMES				= { "level1.tmx", "level2.tmx", "level3.tmx",
+			"level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx", "level10.tmx",
+			"level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level15.tmx", "level16.tmx" };
 
-	private static final int		PLATFORM_TILE_WIDTH		= 32;
-	private static final int		PLATFORM_TILE_HEIGHT	= 32;
+	private static final int				PLATFORM_TILE_WIDTH		= 32;
+	private static final int				PLATFORM_TILE_HEIGHT	= 32;
 
-	public ArrayList<String>		levels					= null;
-	private int						levelNumber				= -1;
+	public ArrayList<String>				levels					= null;
+	public HashMap<String, Vector2>			levelSpawns				= null;
+	public HashMap<String, CollisionMap>	collisionMaps			= null;
+	private int								levelNumber				= -1;
 
-	private World					world					= null;
+	private World							world					= null;
 
-	private Batch					batch					= null;
+	private Batch							batch					= null;
 
 	public LevelEntityFactory(World world, Batch batch) {
 		this(world, batch, DEFAULT_LEVEL_FOLDER);
@@ -115,6 +118,14 @@ public class LevelEntityFactory implements Disposable {
 		return levels.get(levelNumber);
 	}
 
+	public Vector2 getCurrentLevelSpawn() {
+		return levelSpawns.get(getCurrentLevelGroupName());
+	}
+
+	public CollisionMap getCurrentLevelCollisionMap() {
+		return collisionMaps.get(getCurrentLevelGroupName());
+	}
+
 	/**
 	 * <p>
 	 * Loads all of the levels in the given list. They must exist.
@@ -137,6 +148,8 @@ public class LevelEntityFactory implements Disposable {
 
 		TmxMapLoader loader = new TmxMapLoader();
 		levels = new ArrayList<>(nameList.length);
+		levelSpawns = new HashMap<>(nameList.length);
+		collisionMaps = new HashMap<>(nameList.length);
 
 		for (String s : nameList) {
 			if (prefix != null) {
@@ -181,6 +194,23 @@ public class LevelEntityFactory implements Disposable {
 				} else if (isExitLayer(layer)) {
 					Gdx.app.debug("LOAD_LEVELS", "Loading exit layer.");
 					groupManager.add(generateExitEntity(layer), groupName);
+				} else if (isSpawnLayer(layer)) {
+					Gdx.app.debug("LOAD_LEVELS", "Loading player spawn layer.");
+
+					Vector2 spawn = findFirstCell(layer);
+
+					spawn.x *= layer.getTileWidth();
+					spawn.y *= layer.getTileHeight();
+
+					levelSpawns.put(groupName, spawn);
+				}
+
+				if (isSolidLayer(layer)) {
+					if (collisionMaps.get(groupName) == null) {
+						collisionMaps.put(groupName, generateCollisionMap(layer));
+					} else {
+						throw new GdxRuntimeException("Modifying collision maps NYI");
+					}
 				}
 			}
 
@@ -342,7 +372,7 @@ public class LevelEntityFactory implements Disposable {
 	 * @return The platform texture; this is unmanaged so if context is lost it
 	 *         will need to be rebuilt.
 	 */
-	public Texture generateHorizontalPlatformTexture(int size) {
+	protected Texture generateHorizontalPlatformTexture(int size) {
 		final String PLATFORM_TILESET_LOCATION = "tilesets/platformw.png";
 
 		if (size < 2) {
@@ -405,7 +435,7 @@ public class LevelEntityFactory implements Disposable {
 	 * @param size
 	 *        The height of the platform in tiles.
 	 */
-	public Texture generateVerticalPlatformTexture(int size) {
+	protected Texture generateVerticalPlatformTexture(int size) {
 		final String PLATFORM_TILESET_LOCATION = "tilesets/platformh.png";
 
 		if (size < 2) {
@@ -460,12 +490,45 @@ public class LevelEntityFactory implements Disposable {
 		return texture;
 	}
 
+	/**
+	 * <p>
+	 * Scans every cell in the layer and indiscriminately marks it as solid in a
+	 * collision map.
+	 * </p>
+	 * 
+	 * @param layer
+	 *        The layer to use to generate the map.
+	 * @return A boolean array where map[layer.getWidth() * y + x] is a cell,
+	 *         and true means "solid".
+	 */
+	protected CollisionMap generateCollisionMap(TiledMapTileLayer layer) {
+		Array<Boolean> collisionMap = new Array<Boolean>();
+		collisionMap.ensureCapacity(layer.getWidth() * layer.getHeight());
+
+		for (int y = 0; y < layer.getHeight(); y++) {
+			for (int x = 0; x < layer.getWidth(); x++) {
+				collisionMap.add((layer.getCell(x, y) != null));
+			}
+		}
+
+		CollisionMap retVal = new CollisionMap(layer, collisionMap);
+		return retVal;
+	}
+
+	protected static boolean isSolidLayer(TiledMapTileLayer layer) {
+		return (layer.getProperties().get("solid", null, String.class) != null);
+	}
+
 	protected static boolean isExitLayer(TiledMapTileLayer layer) {
 		return layer.getName().equals("exit");
 	}
 
 	protected static boolean isKeyLayer(TiledMapTileLayer layer) {
 		return layer.getName().equals("key");
+	}
+
+	protected static boolean isSpawnLayer(TiledMapTileLayer layer) {
+		return layer.getName().equals("playerspawn");
 	}
 
 	/**

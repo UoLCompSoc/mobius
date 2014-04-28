@@ -12,8 +12,10 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
+import com.sgtcodfish.mobiusListing.systems.CollisionSystem;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
 import com.sgtcodfish.mobiusListing.systems.PlatformInputSystem;
@@ -38,6 +40,8 @@ public class MobiusListingGame extends ApplicationAdapter {
 	private Camera				camera				= null;
 
 	public World				world				= null;
+
+	public CollisionSystem		collisionSystem		= null;
 
 	public PlayerEntityFactory	playerEntityFactory	= null;
 	private Entity				playerEntity		= null;
@@ -69,9 +73,15 @@ public class MobiusListingGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+		collisionSystem = new CollisionSystem(null);
+
 		world.setSystem(new PlayerInputSystem());
 		world.setSystem(new PlatformInputSystem(camera));
+
+		world.setSystem(collisionSystem);
+
 		world.setSystem(new MovementSystem());
+
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
@@ -82,7 +92,6 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 		playerEntityFactory = new PlayerEntityFactory(world);
 		playerEntity = playerEntityFactory.createEntity(5.0f, 5.0f, true);
-		world.addEntity(playerEntity);
 
 		levelEntityFactory = new LevelEntityFactory(world, batch);
 		nextLevel();
@@ -104,7 +113,12 @@ public class MobiusListingGame extends ApplicationAdapter {
 			timeSinceLastDebug += deltaTime;
 
 			if (timeSinceLastDebug > DEBUG_COOLDOWN) {
-				if (Gdx.input.isKeyPressed(Keys.F9)) {
+				if (Gdx.input.isKeyPressed(Keys.F8)) {
+					timeSinceLastDebug = 0.0f;
+					Position p = playerEntity.getComponent(Position.class);
+					Gdx.app.debug("PLAYER_POS", "Player is located at (" + p.position.x + ", " + p.position.y
+							+ "), int=(" + (int) p.position.x + ", " + (int) p.position.y + ").");
+				} else if (Gdx.input.isKeyPressed(Keys.F9)) {
 					timeSinceLastDebug = 0.0f;
 					debugEntities();
 				} else if (Gdx.input.isKeyPressed(Keys.F10)) {
@@ -119,6 +133,9 @@ public class MobiusListingGame extends ApplicationAdapter {
 		for (Entity e : levelEntityFactory.getNextLevelEntityList()) {
 			e.enable();
 		}
+
+		collisionSystem.setCollisionMap(levelEntityFactory.getCurrentLevelCollisionMap());
+		playerEntity.getComponent(Position.class).position.set(levelEntityFactory.getCurrentLevelSpawn());
 	}
 
 	@Override

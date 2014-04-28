@@ -129,6 +129,7 @@ public class PlayerEntityFactory implements Disposable {
 			e.addComponent(ft);
 		}
 
+		world.addEntity(e);
 		return e;
 	}
 

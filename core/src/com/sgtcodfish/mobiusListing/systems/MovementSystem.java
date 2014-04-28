@@ -4,7 +4,6 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.Filter;
 import com.artemis.systems.EntityProcessingSystem;
-import com.sgtcodfish.mobiusListing.WorldConstants;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.Velocity;
@@ -41,7 +40,7 @@ public class MovementSystem extends EntityProcessingSystem {
 		Velocity v = velocityMapper.get(e);
 		PlayerState ps = stateMapper.get(e);
 
-		v.velocity.y -= WorldConstants.GRAVITY;
+		v.velocity.x *= 0.75f; // friction
 
 		v.velocity.x = (Math.abs(v.velocity.x) < 0.1f ? 0.0f : v.velocity.x);
 		v.velocity.y = (Math.abs(v.velocity.y) < 0.1f ? 0.0f : v.velocity.y);
@@ -58,8 +57,10 @@ public class MovementSystem extends EntityProcessingSystem {
 			v.velocity.y = 0.0f;
 		}
 
-		if (ps != null && v.velocity.x == 0.0f && v.velocity.y == 0.0f) {
-			ps.state = HumanoidAnimationState.STANDING;
+		if (ps != null) {
+			if (v.velocity.x == 0.0f && (v.velocity.y == 0.0f && ps.state != HumanoidAnimationState.JUMPING)) {
+				ps.state = HumanoidAnimationState.STANDING;
+			}
 		}
 	}
 }
