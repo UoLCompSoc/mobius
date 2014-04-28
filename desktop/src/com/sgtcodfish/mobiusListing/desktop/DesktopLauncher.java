@@ -7,9 +7,11 @@ import com.sgtcodfish.mobiusListing.MobiusListingGame;
 public class DesktopLauncher {
 	public static void main(String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 320;
-		config.height = 240;
+		config.width = 1024;
+		config.height = 768;
+		config.resizable = false;
+		// config.addIcon("", FileType.Internal);
 
-		new LwjglApplication(new MobiusListingGame(), config);
+		new LwjglApplication(new MobiusListingGame(true), config);
 	}
 }

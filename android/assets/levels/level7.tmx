@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="32" height="17" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="Map" tilewidth="32" tileheight="32">
+  <image source="../tilesets/tileset.png" width="160" height="160"/>
+ </tileset>
+ <tileset firstgid="26" name="numbers" tilewidth="32" tileheight="32">
+  <image source="../fontsets/numbers.png" width="320" height="32"/>
+ </tileset>
+ <layer name="floor" width="32" height="17">
+  <properties>
+   <property name="solid" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztlN0KgzAMhXOphV7Yi/r+bzoL56NRos7NMRg7EIyNSU5+qtnnMdwUZ1KseZFRelqk6qy958Av3ZR/fNHvnfpbzY1/dvnP6pn1rBfy+36iI9G3R2AG5C+SSb5FHP2szmLCLSvOEbBHu7BFEhd6hs4uwess5zamyTdZ39tBOvtaA9/ozOy5WkDUyz3+RTmrredTHV9fh+/XYH22ScJsmTd3dXY6Nl/rXXf0Kth1j2T9P9M4wrdY70mTLDs76WvEnpwtu5j4fRtwGW09G57wpyb2GO7F+r75O8o3NTgj9pU79cdv4gE+9wlC
+  </data>
+ </layer>
+ <layer name="playerspawn" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDCRgGmgHjIJRMApGwQAAABJ4AAM=
+  </data>
+ </layer>
+ <layer name="wall1" width="32" height="17" opacity="0.4">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AU4ANsA2w/9wDbPwpGwSgYBbQAAF4cABI=
+  </data>
+ </layer>
+ <layer name="platform1" width="32" height="17">
+  <properties>
+   <property name="dx" value="5"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFQxEwAbHoQDtiFIyCUTAKRsEoIBMAAKQkABg=
+  </data>
+ </layer>
+ <layer name="exit" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDGfAP9AOGAWjYBSMAiwAAE2kABA=
+  </data>
+ </layer>
+ <layer name="wall2" width="32" height="17">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFwxGwDbD9AgNsP/cA2z8KRsEoGAWjAD8AANEoACI=
+  </data>
+ </layer>
+ <layer name="platform2" width="32" height="17">
+  <properties>
+   <property name="dx" value="12"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMBgAExCLDrQjRsEooBMAAEu8ABg=
+  </data>
+ </layer>
+ <layer name="key" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYKAM8FGofxSMglEwCkbBKBgFIw8AAHwAAA8=
+  </data>
+ </layer>
+ <layer name="levelnumber" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2BkAykolkbCo2AUjIJRMApoCwDd1gCG
+  </data>
+ </layer>
+</map>

@@ -58,3 +58,6 @@ nb-configuration.xml
 
 .gradle
 build/
+
+## Custom (for eclipse)
+desktop/assets/
