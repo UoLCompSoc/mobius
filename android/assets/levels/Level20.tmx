@@ -66,7 +66,7 @@
    eJztzsEJADAMxLDQzpD9V81t0RQk8N9Ve510U78eAQAAAL42uoMAGw==
   </data>
  </layer>
- <layer name="platform 5" width="64" height="17">
+ <layer name="platform5" width="64" height="17">
   <properties>
    <property name="dx" value="-36"/>
   </properties>

@@ -1,4 +1,0 @@
-public static final String[]   MAP_NAMES    = { "level1.tmx", "level2.tmx", "level3.tmx",
-   "level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx", "level10.tmx",
-   "level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level15.tmx", "level16.tmx" "level17.tmx"
-"level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx"} 

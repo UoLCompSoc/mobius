@@ -14,7 +14,7 @@ import com.sgtcodfish.mobiusListing.components.TiledRenderable;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class TiledRenderingSystem extends EntityProcessingSystem {
-	// private ComponentMapper<Position> positionMapper = null;
+	private ComponentMapper<Position>			positionMapper			= null;
 	private ComponentMapper<TiledRenderable>	tiledRenderableMapper	= null;
 
 	private Batch								batch					= null;
@@ -33,21 +33,27 @@ public class TiledRenderingSystem extends EntityProcessingSystem {
 
 	@Override
 	public void initialize() {
-		// positionMapper = world.getMapper(Position.class);
+		positionMapper = world.getMapper(Position.class);
 		tiledRenderableMapper = world.getMapper(TiledRenderable.class);
 	}
 
 	@Override
 	protected void process(Entity e) {
-		// Position p = positionMapper.get(e);
+		Position p = positionMapper.get(e);
 		TiledRenderable tr = tiledRenderableMapper.get(e);
 
 		if (tr.layerArray == null) {
 			tr.initLayerArray();
 		}
 
+		camera.translate(-p.position.x, p.position.y, 0.0f);
+		camera.update();
+
 		tr.renderer.setView((OrthographicCamera) camera);
 		tr.renderer.render(tr.layerArray);
+
+		camera.translate(p.position.x, p.position.y, 0.0f);
+		camera.update();
 	}
 
 	@Override

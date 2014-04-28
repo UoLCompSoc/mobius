@@ -2,7 +2,6 @@ package com.sgtcodfish.mobiusListing.components;
 
 import java.util.HashMap;
 
-import com.artemis.Component;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.sgtcodfish.mobiusListing.player.HumanoidAnimationState;
@@ -12,10 +11,10 @@ import com.sgtcodfish.mobiusListing.player.HumanoidAnimationState;
  * 
  * @author Ashley Davis (SgtCoDFish)
  */
-public class PlayerSprite implements Component {
+public class PlayerSprite extends MobiusSprite {
 	public HashMap<HumanoidAnimationState, Animation>	animationMap	= null;
-	private HumanoidAnimationState					lastState		= HumanoidAnimationState.STANDING;
-	private float									stateTime		= 0.0f;
+	private HumanoidAnimationState						lastState		= HumanoidAnimationState.STANDING;
+	private float										stateTime		= 0.0f;
 
 	public PlayerSprite() {
 	}
@@ -32,6 +31,8 @@ public class PlayerSprite implements Component {
 
 	@Override
 	public void reset() {
+		super.reset();
+
 		if (animationMap != null) {
 			animationMap.clear();
 			animationMap = null;

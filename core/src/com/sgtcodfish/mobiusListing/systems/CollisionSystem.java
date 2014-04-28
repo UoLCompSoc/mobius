@@ -70,10 +70,6 @@ public class CollisionSystem extends EntityProcessingSystem {
 		v.velocity.y -= WorldConstants.GRAVITY;
 
 		if (collisionMap.willCollideX(collisionVector, v.velocity)) {
-			// Gdx.app.debug("X_COLL", "XCOLL");
-			// position.position.x =
-			// collisionMap.worldToGridWorldCoordinatesX(position.position.x);
-
 			v.velocity.x = 0.0f;
 			if (ps != null && ps.state != HumanoidAnimationState.JUMPING) {
 				ps.state = HumanoidAnimationState.STANDING;
@@ -81,10 +77,6 @@ public class CollisionSystem extends EntityProcessingSystem {
 		}
 
 		if (collisionMap.willCollideY(collisionVector, v.velocity)) {
-			// Gdx.app.debug("Y_COLL", "Ycoll");
-			// position.position.y =
-			// collisionMap.worldToGridWorldCoordinatesY(position.position.y);
-
 			v.velocity.y = 0.0f;
 			if (ps != null && ps.state == HumanoidAnimationState.JUMPING) {
 				ps.state = (v.velocity.x != 0.0f ? HumanoidAnimationState.RUNNING : HumanoidAnimationState.STANDING);

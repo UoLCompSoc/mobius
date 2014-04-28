@@ -1,6 +1,5 @@
 package com.sgtcodfish.mobiusListing.components;
 
-import com.artemis.Component;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
@@ -11,12 +10,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * 
  * @author Ashley Davis (SgtCoDFish)
  */
-public class StaticSprite implements Component {
+public class StaticSprite extends MobiusSprite {
 	public TextureRegion	textureRegion	= null;
 
 	@Override
 	public void reset() {
+		super.reset();
 		textureRegion = null;
 	}
-
 }

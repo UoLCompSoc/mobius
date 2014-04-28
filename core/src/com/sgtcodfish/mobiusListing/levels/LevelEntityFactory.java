@@ -2,6 +2,7 @@ package com.sgtcodfish.mobiusListing.levels;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import com.artemis.Entity;
 import com.artemis.World;
@@ -13,9 +14,11 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -50,7 +53,10 @@ public class LevelEntityFactory implements Disposable {
 	public static final String				DEFAULT_LEVEL_FOLDER	= "levels/";
 	public static final String[]			MAP_NAMES				= { "level1.tmx", "level2.tmx", "level3.tmx",
 			"level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx", "level10.tmx",
-			"level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level15.tmx", "level16.tmx" };
+			"level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level15.tmx", "level16.tmx", "level17.tmx",
+			"level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx" };
+
+	public static final String[]			VITAL_LAYERS			= { "floor", "key", "exit", "playerspawn" };
 
 	private static final int				PLATFORM_TILE_WIDTH		= 32;
 	private static final int				PLATFORM_TILE_HEIGHT	= 32;
@@ -161,68 +167,112 @@ public class LevelEntityFactory implements Disposable {
 			if (!handle.exists()) {
 				Gdx.app.debug("LOAD_LEVELS", "Level does not exist: " + s + " when loading from list. Skipping.");
 				continue;
+			} else {
+				loadLevel(loader, handle);
 			}
-
-			TiledMap map = loader.load(handle.path());
-
-			GroupManager groupManager = world.getManager(GroupManager.class);
-			String groupName = handle.name();
-
-			Gdx.app.debug("LOAD_LEVELS", "-----");
-			Gdx.app.debug("LOAD_LEVELS", "Loading " + handle.name() + ".");
-
-			if (!isValidLevel(map, handle.name())) {
-				Gdx.app.debug("LOAD_LEVELS", handle.name() + " is an invalid level format. Skipping.");
-				continue;
-			}
-
-			Entity level = generateLevelEntity(map);
-			Gdx.app.debug("LOAD_LEVELS", "Generated level entity for " + handle.name() + " - id = " + level.id + ".");
-			groupManager.add(level, groupName);
-
-			for (int i = 0; i < map.getLayers().getCount(); i++) {
-				TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
-
-				if (isInteractableLayer(layer)) {
-					Gdx.app.debug("LOAD_LEVELS", "Loading interactible layer: " + layer.getName());
-					groupManager.add(generateInteractablePlatformEntity(layer), groupName);
-				} else if (isKeyLayer(layer)) {
-					Gdx.app.debug("LOAD_LEVELS", "Loading key layer.");
-					String keyName = handle.nameWithoutExtension().substring(0, 0).toUpperCase()
-							+ handle.nameWithoutExtension().substring(1) + "'s Key";
-					groupManager.add(generateKeyEntity(layer, keyName), groupName);
-				} else if (isExitLayer(layer)) {
-					Gdx.app.debug("LOAD_LEVELS", "Loading exit layer.");
-					groupManager.add(generateExitEntity(layer), groupName);
-				} else if (isSpawnLayer(layer)) {
-					Gdx.app.debug("LOAD_LEVELS", "Loading player spawn layer.");
-
-					Vector2 spawn = findFirstCell(layer);
-
-					spawn.x *= layer.getTileWidth();
-					spawn.y *= layer.getTileHeight();
-
-					levelSpawns.put(groupName, spawn);
-				}
-
-				if (isSolidLayer(layer)) {
-					if (collisionMaps.get(groupName) == null) {
-						collisionMaps.put(groupName, generateCollisionMap(layer));
-					} else {
-						throw new GdxRuntimeException("Modifying collision maps NYI");
-					}
-				}
-			}
-
-			levels.add(groupName);
-			Gdx.app.debug("LOAD_LEVELS", "-----\n");
 		}
 	}
 
-	protected Entity generateLevelEntity(TiledMap map) {
+	protected void loadLevel(TmxMapLoader loader, FileHandle handle) {
+		TiledMap map = loader.load(handle.path());
+
+		GroupManager groupManager = world.getManager(GroupManager.class);
+		String groupName = handle.name();
+		String mirrorGroupName = groupName + "_mirror";
+
+		Gdx.app.debug("LOAD_LEVELS", "-----");
+		Gdx.app.debug("LOAD_LEVELS", "Loading " + handle.name() + ".");
+
+		if (!isValidLevel(map, handle.name())) {
+			Gdx.app.debug("LOAD_LEVELS", handle.name() + " is an invalid level format. Skipping.");
+			return;
+		}
+
+		TiledMap invertedMap = generateInvertedMap(map);
+
+		TiledMapTileLayer floorLayer = ((TiledMapTileLayer) (map.getLayers().get("floor")));
+		float mapWidth = floorLayer.getTileWidth() * floorLayer.getWidth();
+		float mapHeight = floorLayer.getTileHeight() * floorLayer.getHeight();
+
+		Gdx.app.debug("LOAD_LEVELS", "Level details:\nWidth in tiles (w, h): (" + floorLayer.getWidth() + ", "
+				+ floorLayer.getHeight() + ")\nTile dimensions in pixels (w, h): (" + floorLayer.getTileWidth() + ", "
+				+ floorLayer.getTileHeight() + ")\nMap dimensions in pixels (w, h): (" + mapWidth + ", " + mapHeight
+				+ ").");
+
+		Entity level = generateLevelEntity(map, 0.0f, 0.0f);
+		Entity mirrorLevel = generateLevelEntity(invertedMap, mapWidth, 0.0f);
+		makeMirrored(mirrorLevel, level, floorLayer);
+
+		groupManager.add(level, groupName);
+		groupManager.add(mirrorLevel, mirrorGroupName);
+
+		Gdx.app.debug("LOAD_LEVELS", "Generated regular and mirror level entities for " + handle.name()
+				+ " - id reg = " + level.id + ", mirror = " + mirrorLevel.id);
+
+		for (int i = 0; i < map.getLayers().getCount(); i++) {
+			TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
+
+			if (isInteractableLayer(layer)) {
+				Gdx.app.debug("LOAD_LEVELS", "Loading interactible layer: " + layer.getName());
+				groupManager.add(generateInteractablePlatformEntity(layer), groupName);
+
+			} else if (isKeyLayer(layer)) {
+				Gdx.app.debug("LOAD_LEVELS", "Loading key layer.");
+				String keyName = handle.nameWithoutExtension().substring(0, 0).toUpperCase()
+						+ handle.nameWithoutExtension().substring(1) + "'s Key";
+				groupManager.add(generateKeyEntity(layer, keyName), groupName);
+
+			} else if (isExitLayer(layer)) {
+				Gdx.app.debug("LOAD_LEVELS", "Loading exit layer.");
+				groupManager.add(generateExitEntity(layer), groupName);
+
+			} else if (isSpawnLayer(layer)) {
+				Gdx.app.debug("LOAD_LEVELS", "Loading player spawn layer.");
+
+				Vector2 spawn = findFirstCell(layer);
+
+				spawn.x *= layer.getTileWidth();
+				spawn.y *= layer.getTileHeight();
+
+				levelSpawns.put(groupName, spawn);
+			}
+
+			if (isSolidLayer(layer)) {
+				if (collisionMaps.get(groupName) == null) {
+					collisionMaps.put(groupName, generateCollisionMap(layer));
+				} else {
+					throw new GdxRuntimeException("Modifying collision maps NYI");
+				}
+			}
+		}
+
+		levels.add(groupName);
+		Gdx.app.debug("LOAD_LEVELS", "-----\n");
+	}
+
+	/**
+	 * <p>
+	 * Makes an entity "mirrored" mirror "link", meaning its Position
+	 * component's y component is mirrored and the sprite is drawn flipped.
+	 * </p>
+	 * 
+	 * @param mirrored
+	 *        The (already initialised) mirrored entity to be modified.
+	 * @param link
+	 *        The entity "mirrored" is based off.
+	 * @param mirrorLayer
+	 *        The layer whose dimensions are used to mirror the position
+	 *        changes.
+	 */
+	protected void makeMirrored(Entity mirrored, Entity link, TiledMapTileLayer mirrorLayer) {
+
+	}
+
+	protected Entity generateLevelEntity(TiledMap map, float x, float y) {
 		Entity e = world.createEntity();
 
 		Position p = world.createComponent(Position.class);
+		p.position.set(x, y);
 		e.addComponent(p);
 
 		TiledRenderable r = world.createComponent(TiledRenderable.class);
@@ -266,7 +316,9 @@ public class LevelEntityFactory implements Disposable {
 		position.position.y = platformRect.y;
 
 		PlatformSprite platformSprite = world.createComponent(PlatformSprite.class);
-		platformSprite.texture = texture;
+		platformSprite.setTexture(texture);
+		platformSprite.spriteWidth = texture.getWidth();
+		platformSprite.spriteHeight = texture.getHeight();
 		platformSprite.size = platSize;
 		platformSprite.orientation = orientation;
 		platformSprite.rectangle = new Rectangle(platformRect);
@@ -328,6 +380,8 @@ public class LevelEntityFactory implements Disposable {
 
 			StaticSprite staticSprite = world.createComponent(StaticSprite.class);
 			staticSprite.textureRegion = layer.getCell((int) keyLoc.x, (int) keyLoc.y).getTile().getTextureRegion();
+			staticSprite.spriteWidth = staticSprite.textureRegion.getRegionWidth();
+			staticSprite.spriteHeight = staticSprite.textureRegion.getRegionHeight();
 			e.addComponent(staticSprite);
 
 			e.addToWorld();
@@ -359,6 +413,60 @@ public class LevelEntityFactory implements Disposable {
 			e.addToWorld();
 			e.disable();
 			return e;
+		}
+	}
+
+	protected TiledMap generateInvertedMap(TiledMap map) {
+		TiledMap invertedMap = new TiledMap();
+
+		MapLayers invertedLayers = invertedMap.getLayers();
+
+		for (int i = 0; i < map.getLayers().getCount(); i++) {
+			TiledMapTileLayer origLayer = (TiledMapTileLayer) map.getLayers().get(i);
+
+			TiledMapTileLayer tempLayer = invertLayer(origLayer);
+
+			tempLayer.setOpacity(origLayer.getOpacity());
+			tempLayer.setName(origLayer.getName());
+			tempLayer.setVisible(origLayer.isVisible());
+			copyLayerProperties(origLayer, tempLayer);
+
+			invertedLayers.add(tempLayer);
+		}
+
+		return invertedMap;
+	}
+
+	protected TiledMapTileLayer invertLayer(TiledMapTileLayer layer) {
+		TiledMapTileLayer invertedLayer = new TiledMapTileLayer(layer.getWidth(), layer.getHeight(),
+				(int) layer.getTileWidth(), (int) layer.getTileHeight());
+
+		for (int y = 0; y < layer.getHeight(); y++) {
+			for (int x = 0; x < layer.getWidth(); x++) {
+				Cell regularCell = layer.getCell(x, y);
+				Cell invertedCell = null;
+
+				if (regularCell != null) {
+					invertedCell = new Cell();
+					invertedCell.setFlipVertically(true);
+					invertedCell.setTile(regularCell.getTile());
+				}
+
+				invertedLayer.setCell(x, layer.getHeight() - 1 - y, invertedCell);
+			}
+		}
+
+		return invertedLayer;
+	}
+
+	protected void copyLayerProperties(TiledMapTileLayer from, TiledMapTileLayer to) {
+		MapProperties fromP = from.getProperties();
+		MapProperties toP = to.getProperties();
+		Iterator<String> it = fromP.getKeys();
+
+		while (it.hasNext()) {
+			String key = it.next();
+			toP.put(key, fromP.get(key));
 		}
 	}
 
@@ -609,6 +717,10 @@ public class LevelEntityFactory implements Disposable {
 		Rectangle retVal = new Rectangle();
 
 		Vector2 first = findFirstCell(layer);
+		if (first == null) {
+			Gdx.app.debug("CALC_PLATFORM_RECT", "Couldn't find first cell in platform layer.");
+			return null;
+		}
 		int firstX = (int) first.x;
 		int firstY = (int) first.y;
 
@@ -663,10 +775,9 @@ public class LevelEntityFactory implements Disposable {
 		boolean retVal = true;
 
 		HashMap<String, Boolean> found = new HashMap<>();
-		found.put("floor", false);
-		found.put("key", false);
-		found.put("exit", false);
-		found.put("playerspawn", false);
+		for (String s : VITAL_LAYERS) {
+			found.put(s, false);
+		}
 
 		int otherLayers = 0, dxLayers = 0, dyLayers = 0, minOpacityLayers = 0, propLayers = 0;
 
@@ -725,7 +836,7 @@ public class LevelEntityFactory implements Disposable {
 
 		for (String key : found.keySet()) {
 			if (!found.get(key).booleanValue()) {
-				Gdx.app.debug("IS_VALID_LEVEL", "Error: Layer not found in map " + mapName + ": " + key);
+				Gdx.app.debug("IS_VALID_LEVEL", "Error: Vital layer not found in map " + mapName + ": " + key);
 				retVal = false;
 			}
 		}

@@ -68,19 +68,26 @@ public class SpriteRenderingSystem extends EntityProcessingSystem {
 		batch.begin();
 
 		if (playerSprite != null) {
+			int mirror = (playerSprite.mirrored ? -1 : 1);
+
 			batch.draw(playerSprite.getFrame(playerStateMapper.get(e).state, world.getDelta()), p.position.x,
-					p.position.y);
+					p.position.y, playerSprite.spriteWidth, mirror * playerSprite.spriteHeight);
+
 		} else if (staticSprite != null) {
-			batch.draw(staticSprite.textureRegion, p.position.x, p.position.y);
+			int mirror = (staticSprite.mirrored ? -1 : 1);
+			batch.draw(staticSprite.textureRegion, p.position.x, p.position.y, staticSprite.spriteWidth, mirror
+					* staticSprite.spriteHeight);
+
 		} else if (platformSprite != null) {
+			int mirror = (platformSprite.mirrored ? -1 : 1);
 			Opacity opacity = opacityMapper.get(e);
 
 			if (opacity != null) {
 				batch.setColor(1.0f, 1.0f, 1.0f, opacity.opacity);
 			}
 
-			batch.draw(platformSprite.texture, p.position.x, p.position.y, platformSprite.rectangle.width,
-					platformSprite.rectangle.height);
+			batch.draw(platformSprite.textureRegion, p.position.x, p.position.y, platformSprite.rectangle.width, mirror
+					* platformSprite.rectangle.height);
 
 			if (opacity != null) {
 				batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);

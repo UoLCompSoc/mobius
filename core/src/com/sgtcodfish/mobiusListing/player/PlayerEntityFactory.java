@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.components.FocusTaker;
@@ -31,12 +32,14 @@ import com.sgtcodfish.mobiusListing.components.Velocity;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class PlayerEntityFactory implements Disposable {
-	public static final String							DEFAULT_SPRITE_LOCATION	= "player/sprites.png";
+	public static final String							DEFAULT_SPRITE_LOCATION			= "player/sprites.png";
+	public static final int								DEFAULT_PLAYER_TEXTURE_WIDTH	= 32;
+	public static final int								DEFAULT_PLAYER_TEXTURE_HEIGHT	= 32;
 
-	private World										world					= null;
-	private HashMap<HumanoidAnimationState, Animation>	animationMap			= null;
+	private World										world							= null;
+	private HashMap<HumanoidAnimationState, Animation>	animationMap					= null;
 
-	public Texture										defaultPlayerTexture	= null;
+	public Texture										defaultPlayerTexture			= null;
 
 	public PlayerEntityFactory(World world) {
 		this(world, null);
@@ -116,12 +119,15 @@ public class PlayerEntityFactory implements Disposable {
 
 		PlayerSprite d = world.createComponent(PlayerSprite.class);
 		d.animationMap = animationMap;
+		d.spriteWidth = DEFAULT_PLAYER_TEXTURE_WIDTH;
+		d.spriteHeight = DEFAULT_PLAYER_TEXTURE_HEIGHT;
 		e.addComponent(d);
 
 		PlayerInputListener pil = world.createComponent(PlayerInputListener.class);
 		e.addComponent(pil);
 
 		Solid s = world.createComponent(Solid.class);
+		s.boundingBox = new Rectangle(0.0f, 0.0f, DEFAULT_PLAYER_TEXTURE_WIDTH, DEFAULT_PLAYER_TEXTURE_HEIGHT);
 		e.addComponent(s);
 
 		if (takesFocus) {
@@ -147,7 +153,8 @@ public class PlayerEntityFactory implements Disposable {
 		texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 
 		// TODO: More graceful loading than hard coding what regions to use
-		TextureRegion[][] regions = TextureRegion.split(texture, 32, 32);
+		TextureRegion[][] regions = TextureRegion.split(texture, DEFAULT_PLAYER_TEXTURE_WIDTH,
+				DEFAULT_PLAYER_TEXTURE_HEIGHT);
 		standing = new Animation(STANDING_FRAME_DURATION, regions[0][0], regions[0][1], regions[0][2], regions[0][3],
 				regions[0][4], regions[0][5], regions[0][6], regions[0][7]);
 		standing.setPlayMode(PlayMode.LOOP);
