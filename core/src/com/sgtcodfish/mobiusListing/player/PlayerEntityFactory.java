@@ -1,5 +1,6 @@
 package com.sgtcodfish.mobiusListing.player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.artemis.Entity;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.components.FocusTaker;
+import com.sgtcodfish.mobiusListing.components.Inventory;
 import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
 import com.sgtcodfish.mobiusListing.components.PlayerSprite;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
@@ -129,6 +131,10 @@ public class PlayerEntityFactory implements Disposable {
 		Solid s = world.createComponent(Solid.class);
 		s.boundingBox = new Rectangle(0.0f, 0.0f, DEFAULT_PLAYER_TEXTURE_WIDTH, DEFAULT_PLAYER_TEXTURE_HEIGHT);
 		e.addComponent(s);
+
+		Inventory i = world.createComponent(Inventory.class);
+		i.inventoryList = new ArrayList<>();
+		e.addComponent(i);
 
 		if (takesFocus) {
 			FocusTaker ft = world.createComponent(FocusTaker.class);

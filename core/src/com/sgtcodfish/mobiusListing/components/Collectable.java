@@ -1,6 +1,7 @@
 package com.sgtcodfish.mobiusListing.components;
 
 import com.artemis.Component;
+import com.sgtcodfish.mobiusListing.Item;
 
 /**
  * <p>
@@ -10,13 +11,11 @@ import com.artemis.Component;
  * 
  * @author Ashley Davis (SgtCoDFish)
  */
-public class Collectible implements Component {
-	private static final String	DEFAULT_NAME	= "CollectibleEntity";
-	public String				name			= DEFAULT_NAME;
+public class Collectable implements Component {
+	public Item	item	= null;
 
 	@Override
 	public void reset() {
-		name = DEFAULT_NAME;
+		item = null;
 	}
-
 }

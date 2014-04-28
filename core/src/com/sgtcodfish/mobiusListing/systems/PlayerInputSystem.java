@@ -7,6 +7,7 @@ import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.sgtcodfish.mobiusListing.MobiusListingGame;
 import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
@@ -21,13 +22,17 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 	private ComponentMapper<PlayerState>	animationStateMapper	= null;
 	private ComponentMapper<Velocity>		velocityMapper			= null;
 
+	private MobiusListingGame				instance				= null;
+
 	@SuppressWarnings("unchecked")
-	public PlayerInputSystem() {
-		this(Filter.allComponents(PlayerInputListener.class, Position.class, PlayerState.class, Velocity.class));
+	public PlayerInputSystem(MobiusListingGame instance) {
+		this(Filter.allComponents(PlayerInputListener.class, Position.class, PlayerState.class, Velocity.class),
+				instance);
 	}
 
-	protected PlayerInputSystem(Filter filter) {
+	protected PlayerInputSystem(Filter filter, MobiusListingGame instance) {
 		super(filter);
+		this.instance = instance;
 	}
 
 	@Override
@@ -38,7 +43,7 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 
 	@Override
 	protected void process(Entity e) {
-		// TODO: More portable implementation
+		// TODO: More portable implementation - keys in PlayerInputListener?
 
 		PlayerState ps = animationStateMapper.get(e);
 
@@ -61,6 +66,9 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 			velocityMapper.get(e).velocity.y = PlayerConstants.JUMP_VELOCITY;
 			ps.state = HumanoidAnimationState.JUMPING;
 		}
-	}
 
+		if (Gdx.input.isKeyPressed(Keys.P)) {
+			instance.resetPlayer();
+		}
+	}
 }

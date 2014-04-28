@@ -12,15 +12,17 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sgtcodfish.mobiusListing.components.Inventory;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
-import com.sgtcodfish.mobiusListing.systems.CollisionSystem;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
 import com.sgtcodfish.mobiusListing.systems.PlatformInputSystem;
 import com.sgtcodfish.mobiusListing.systems.PlayerInputSystem;
+import com.sgtcodfish.mobiusListing.systems.SolidProcessingSystem;
 import com.sgtcodfish.mobiusListing.systems.SpriteRenderingSystem;
+import com.sgtcodfish.mobiusListing.systems.TerrainCollisionSystem;
 import com.sgtcodfish.mobiusListing.systems.TiledRenderingSystem;
 
 /**
@@ -34,22 +36,22 @@ public class MobiusListingGame extends ApplicationAdapter {
 		TITLE_SCREEN, PLAYING;
 	}
 
-	public static boolean		DEBUG				= false;
+	public static boolean			DEBUG				= false;
 
-	private SpriteBatch			batch				= null;
-	private Camera				camera				= null;
+	private SpriteBatch				batch				= null;
+	private Camera					camera				= null;
 
-	public World				world				= null;
+	public World					world				= null;
 
-	public CollisionSystem		collisionSystem		= null;
+	public TerrainCollisionSystem	collisionSystem		= null;
 
-	public PlayerEntityFactory	playerEntityFactory	= null;
-	private Entity				playerEntity		= null;
+	public PlayerEntityFactory		playerEntityFactory	= null;
+	private Entity					playerEntity		= null;
 
-	public LevelEntityFactory	levelEntityFactory	= null;
+	public LevelEntityFactory		levelEntityFactory	= null;
 
-	private final float			DEBUG_COOLDOWN		= 2.0f;
-	private float				timeSinceLastDebug	= DEBUG_COOLDOWN;
+	private final float				DEBUG_COOLDOWN		= 2.0f;
+	private float					timeSinceLastDebug	= DEBUG_COOLDOWN;
 
 	public MobiusListingGame() {
 		this(false);
@@ -73,12 +75,13 @@ public class MobiusListingGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		collisionSystem = new CollisionSystem(null);
+		collisionSystem = new TerrainCollisionSystem(null);
 
-		world.setSystem(new PlayerInputSystem());
+		world.setSystem(new PlayerInputSystem(this));
 		world.setSystem(new PlatformInputSystem(camera));
 
 		world.setSystem(collisionSystem);
+		world.setSystem(new SolidProcessingSystem());
 
 		world.setSystem(new MovementSystem());
 
@@ -124,18 +127,31 @@ public class MobiusListingGame extends ApplicationAdapter {
 				} else if (Gdx.input.isKeyPressed(Keys.F10)) {
 					nextLevel();
 					timeSinceLastDebug = 0.0f;
+				} else if (Gdx.input.isKeyPressed(Keys.F11)) {
+					String inventString = "";
+
+					for (Item i : playerEntity.getComponent(Inventory.class).inventoryList) {
+						inventString += i.name + "\n";
+					}
+
+					Gdx.app.debug("PLAYER_INVENTORY", "Player inventory contains:\n" + inventString);
+					timeSinceLastDebug = 0.0f;
 				}
 			}
 		}
 	}
 
 	protected void nextLevel() {
-		for (Entity e : levelEntityFactory.getNextLevelEntityList()) {
-			e.enable();
-		}
+		levelEntityFactory.loadNextLevel();
 
 		collisionSystem.setCollisionMap(levelEntityFactory.getCurrentLevelCollisionMap());
+		resetPlayer();
+	}
+
+	public void resetPlayer() {
+		// TODO: More elegant manipulation of inventory.
 		playerEntity.getComponent(Position.class).position.set(levelEntityFactory.getCurrentLevelSpawn());
+		playerEntity.getComponent(Inventory.class).inventoryList.clear();
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import com.artemis.Entity;
 import com.artemis.Filter;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.math.Vector2;
-import com.sgtcodfish.mobiusListing.CollisionMap;
+import com.sgtcodfish.mobiusListing.TerrainCollisionMap;
 import com.sgtcodfish.mobiusListing.WorldConstants;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
@@ -16,26 +16,26 @@ import com.sgtcodfish.mobiusListing.player.HumanoidAnimationState;
 /**
  * @author Ashley Davis (SgtCoDFish)
  */
-public class CollisionSystem extends EntityProcessingSystem {
+public class TerrainCollisionSystem extends EntityProcessingSystem {
 	private ComponentMapper<Position>		positionMapper	= null;
 	private ComponentMapper<Velocity>		velocityMapper	= null;
 
 	private ComponentMapper<PlayerState>	stateMapper		= null;
 
-	private CollisionMap					collisionMap	= null;
+	private TerrainCollisionMap					collisionMap	= null;
 	private Vector2							collisionVector	= null;
 
 	@SuppressWarnings("unchecked")
-	public CollisionSystem(CollisionMap collisionMap) {
+	public TerrainCollisionSystem(TerrainCollisionMap collisionMap) {
 		this(Filter.allComponents(Position.class, Velocity.class, Solid.class), collisionMap);
 	}
 
-	protected CollisionSystem(Filter filter, CollisionMap collisionMap) {
+	protected TerrainCollisionSystem(Filter filter, TerrainCollisionMap collisionMap) {
 		super(filter);
 		this.collisionMap = collisionMap;
 	}
 
-	public void setCollisionMap(CollisionMap collisionMap) {
+	public void setCollisionMap(TerrainCollisionMap collisionMap) {
 		this.collisionMap = collisionMap;
 	}
 

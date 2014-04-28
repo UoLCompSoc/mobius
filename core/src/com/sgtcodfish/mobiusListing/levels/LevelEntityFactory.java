@@ -26,9 +26,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
-import com.sgtcodfish.mobiusListing.CollisionMap;
+import com.sgtcodfish.mobiusListing.Item;
+import com.sgtcodfish.mobiusListing.Item.ItemType;
+import com.sgtcodfish.mobiusListing.TerrainCollisionMap;
 import com.sgtcodfish.mobiusListing.WorldConstants;
-import com.sgtcodfish.mobiusListing.components.Collectible;
+import com.sgtcodfish.mobiusListing.components.Collectable;
 import com.sgtcodfish.mobiusListing.components.DxLayer;
 import com.sgtcodfish.mobiusListing.components.DyLayer;
 import com.sgtcodfish.mobiusListing.components.FadableLayer;
@@ -50,25 +52,29 @@ import com.sgtcodfish.mobiusListing.components.TiledRenderable;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class LevelEntityFactory implements Disposable {
-	public static final String				DEFAULT_LEVEL_FOLDER	= "levels/";
-	public static final String[]			MAP_NAMES				= { "level1.tmx", "level2.tmx", "level3.tmx",
+	public static final String					DEFAULT_LEVEL_FOLDER	= "levels/";
+	public static final String[]				MAP_NAMES				= { "level1.tmx", "level2.tmx", "level3.tmx",
 			"level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx", "level10.tmx",
 			"level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level15.tmx", "level16.tmx", "level17.tmx",
-			"level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx" };
+			"level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx",
+			"level25.tmx", "level26.tmx", "level27.tmx", "level28.tmx", "level29.tmx", "level30.tmx", "level31.tmx",
+			"level32.tmx"												};
 
-	public static final String[]			VITAL_LAYERS			= { "floor", "key", "exit", "playerspawn" };
+	public static final String[]				VITAL_LAYERS			= { "floor", "key", "exit", "playerspawn" };
 
-	private static final int				PLATFORM_TILE_WIDTH		= 32;
-	private static final int				PLATFORM_TILE_HEIGHT	= 32;
+	public static final String					MIRROR_GROUP_EXTENSION	= "_mirror";
 
-	public ArrayList<String>				levels					= null;
-	public HashMap<String, Vector2>			levelSpawns				= null;
-	public HashMap<String, CollisionMap>	collisionMaps			= null;
-	private int								levelNumber				= -1;
+	private static final int					PLATFORM_TILE_WIDTH		= 32;
+	private static final int					PLATFORM_TILE_HEIGHT	= 32;
 
-	private World							world					= null;
+	public ArrayList<String>					levels					= null;
+	public HashMap<String, Vector2>				levelSpawns				= null;
+	public HashMap<String, TerrainCollisionMap>	collisionMaps			= null;
+	private int									levelNumber				= -1;
 
-	private Batch							batch					= null;
+	private World								world					= null;
+
+	private Batch								batch					= null;
 
 	public LevelEntityFactory(World world, Batch batch) {
 		this(world, batch, DEFAULT_LEVEL_FOLDER);
@@ -86,19 +92,20 @@ public class LevelEntityFactory implements Disposable {
 	 * Returns null if there are no more levels.
 	 * </p>
 	 * 
-	 * @return The next level entity, or null if there are no more.
+	 * @return true if a level was loaded, false if there are no more levels.
 	 */
-	public Array<Entity> getNextLevelEntityList() {
+	public boolean loadNextLevel() {
 		nextLevel();
 
 		if (levelNumber >= levels.size()) {
-			return null;
+			return false;
 		} else {
 			if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
 				Gdx.app.debug("NEXT_LEVEL", "Level's manager contains "
 						+ world.getManager(GroupManager.class).getEntities(levels.get(levelNumber)).size + " entities.");
 			}
-			return world.getManager(GroupManager.class).getEntities(levels.get(levelNumber));
+
+			return true;
 		}
 	}
 
@@ -106,17 +113,37 @@ public class LevelEntityFactory implements Disposable {
 		if (levelNumber >= 0) {
 			int deletedCount = 0;
 
-			for (Entity e : world.getManager(GroupManager.class).getEntities(getCurrentLevelGroupName())) {
+			for (Entity e : getCurrentLevelEntities()) {
 				e.deleteFromWorld();
 				deletedCount++;
 			}
 
-			Gdx.app.debug("NEXT_LEVEL", "Deleted entities from old level: " + deletedCount + " deleted.");
+			for (Entity e : getCurrentMirroredLevelEntities()) {
+				e.deleteFromWorld();
+				deletedCount++;
+			}
+
+			Gdx.app.debug("NEXT_LEVEL", "Deleted " + deletedCount + " entities from old level.");
 		}
 
 		levelNumber++;
-		if (levelNumber <= levels.size()) {
-			Gdx.app.debug("NEXT_LEVEL", "On level " + (levelNumber + 1) + " of " + levels.size() + ".");
+
+		if (levelNumber < levels.size()) {
+			Gdx.app.debug("NEXT_LEVEL", "On level " + (levelNumber + 1) + " of " + (levels.size() + 1) + ".");
+
+			int enabledCount = 0;
+
+			for (Entity e : getCurrentLevelEntities()) {
+				e.enable();
+				enabledCount++;
+			}
+
+			for (Entity e : getCurrentMirroredLevelEntities()) {
+				e.enable();
+				enabledCount++;
+			}
+
+			Gdx.app.debug("NEXT_LEVEL", "Enabled " + enabledCount + " entities for new level.");
 		}
 	}
 
@@ -124,12 +151,24 @@ public class LevelEntityFactory implements Disposable {
 		return levels.get(levelNumber);
 	}
 
+	public String getCurrentLevelMirrorGroupName() {
+		return getCurrentLevelGroupName() + MIRROR_GROUP_EXTENSION;
+	}
+
 	public Vector2 getCurrentLevelSpawn() {
 		return levelSpawns.get(getCurrentLevelGroupName());
 	}
 
-	public CollisionMap getCurrentLevelCollisionMap() {
+	public TerrainCollisionMap getCurrentLevelCollisionMap() {
 		return collisionMaps.get(getCurrentLevelGroupName());
+	}
+
+	protected Array<Entity> getCurrentLevelEntities() {
+		return world.getManager(GroupManager.class).getEntities(getCurrentLevelGroupName());
+	}
+
+	protected Array<Entity> getCurrentMirroredLevelEntities() {
+		return world.getManager(GroupManager.class).getEntities(getCurrentLevelMirrorGroupName());
 	}
 
 	/**
@@ -178,7 +217,7 @@ public class LevelEntityFactory implements Disposable {
 
 		GroupManager groupManager = world.getManager(GroupManager.class);
 		String groupName = handle.name();
-		String mirrorGroupName = groupName + "_mirror";
+		String mirrorGroupName = groupName + MIRROR_GROUP_EXTENSION;
 
 		Gdx.app.debug("LOAD_LEVELS", "-----");
 		Gdx.app.debug("LOAD_LEVELS", "Loading " + handle.name() + ".");
@@ -218,8 +257,8 @@ public class LevelEntityFactory implements Disposable {
 
 			} else if (isKeyLayer(layer)) {
 				Gdx.app.debug("LOAD_LEVELS", "Loading key layer.");
-				String keyName = handle.nameWithoutExtension().substring(0, 0).toUpperCase()
-						+ handle.nameWithoutExtension().substring(1) + "'s Key";
+				String firstChar = ("" + handle.nameWithoutExtension().charAt(0)).toUpperCase();
+				String keyName = firstChar + handle.nameWithoutExtension().substring(1) + " Key";
 				groupManager.add(generateKeyEntity(layer, keyName), groupName);
 
 			} else if (isExitLayer(layer)) {
@@ -371,18 +410,20 @@ public class LevelEntityFactory implements Disposable {
 			position.position.y = keyLoc.y * layer.getTileHeight();
 			e.addComponent(position);
 
-			Solid solid = world.createComponent(Solid.class);
-			e.addComponent(solid);
-
-			Collectible collectible = world.createComponent(Collectible.class);
-			collectible.name = keyName;
-			e.addComponent(collectible);
+			Collectable collectable = world.createComponent(Collectable.class);
+			collectable.item = new Item(keyName, ItemType.KEY);
+			e.addComponent(collectable);
 
 			StaticSprite staticSprite = world.createComponent(StaticSprite.class);
 			staticSprite.textureRegion = layer.getCell((int) keyLoc.x, (int) keyLoc.y).getTile().getTextureRegion();
 			staticSprite.spriteWidth = staticSprite.textureRegion.getRegionWidth();
 			staticSprite.spriteHeight = staticSprite.textureRegion.getRegionHeight();
 			e.addComponent(staticSprite);
+
+			Solid solid = world.createComponent(Solid.class);
+			solid.boundingBox = new Rectangle(position.position.x, position.position.y, staticSprite.spriteWidth,
+					staticSprite.spriteHeight);
+			e.addComponent(solid);
 
 			e.addToWorld();
 			e.disable();
@@ -408,6 +449,8 @@ public class LevelEntityFactory implements Disposable {
 
 			StaticSprite s = world.createComponent(StaticSprite.class);
 			s.textureRegion = layer.getCell((int) exitLoc.x, (int) exitLoc.y).getTile().getTextureRegion();
+			s.spriteWidth = s.textureRegion.getRegionWidth();
+			s.spriteHeight = s.textureRegion.getRegionHeight();
 			e.addComponent(s);
 
 			e.addToWorld();
@@ -609,7 +652,7 @@ public class LevelEntityFactory implements Disposable {
 	 * @return A boolean array where map[layer.getWidth() * y + x] is a cell,
 	 *         and true means "solid".
 	 */
-	protected CollisionMap generateCollisionMap(TiledMapTileLayer layer) {
+	protected TerrainCollisionMap generateCollisionMap(TiledMapTileLayer layer) {
 		Array<Boolean> collisionMap = new Array<Boolean>();
 		collisionMap.ensureCapacity(layer.getWidth() * layer.getHeight());
 
@@ -619,7 +662,7 @@ public class LevelEntityFactory implements Disposable {
 			}
 		}
 
-		CollisionMap retVal = new CollisionMap(layer, collisionMap);
+		TerrainCollisionMap retVal = new TerrainCollisionMap(layer, collisionMap);
 		return retVal;
 	}
 

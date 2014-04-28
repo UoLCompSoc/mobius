@@ -7,11 +7,11 @@ import com.badlogic.gdx.utils.Array;
 /**
  * @author Ashley Davis (SgtCoDFish)
  */
-public class CollisionMap {
+public class TerrainCollisionMap {
 	private TiledMapTileLayer	layer			= null;
 	private Array<Boolean>		collisionMap	= null;
 
-	public CollisionMap(TiledMapTileLayer layer, Array<Boolean> collisionMap) {
+	public TerrainCollisionMap(TiledMapTileLayer layer, Array<Boolean> collisionMap) {
 		this.layer = layer;
 		this.collisionMap = collisionMap;
 	}
