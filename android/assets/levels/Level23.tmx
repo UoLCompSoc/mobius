@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="64" height="17" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="map" tilewidth="32" tileheight="32">
+  <image source="../tilesets/tileset.png" width="160" height="160"/>
+ </tileset>
+ <tileset firstgid="26" name="numbers" tilewidth="32" tileheight="32">
+  <image source="../fontsets/numbers.PNG" width="320" height="32"/>
+ </tileset>
+ <layer name="floor" width="64" height="17">
+  <properties>
+   <property name="solid" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztld0KgCAMhRWKfsiLvND3f9OSzuAQXaQXVssPhifdtA2HxjQaDQ0MmVoTGnLvdou72cw4DbmX8ufc+0x9xUiW7t56+p6g0/yM0WKMND/Dz5njHnvyT34BcQ5+gdblrA5a9ou05uHraa8BMXd0oP+b6Iwvs2Rqjfy5/4W31qD0PSvhrTWoSauBHqR3xGr00NNwzrXy3QA4mAS+
+  </data>
+ </layer>
+ <layer name="playerspawn" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztzjEBAAAIA6B99m9si3kICUgA4Ke5DgAAULNW5AAI
+  </data>
+ </layer>
+ <layer name="exit" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztzgENAAAIA6A3sH9bY9w5SEACcMO0AwAAwFsLy5AAEA==
+  </data>
+ </layer>
+ <layer name="key" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztzEERAAAMAiAT2D+uKXb7QAASAAAAgF89/gcWQAAP
+  </data>
+ </layer>
+ <layer name="levelnumber" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztxUENADAIADF0gH+f2wNMQJtcLgKAq+qX/QkAADZ6zP8Ahw==
+  </data>
+ </layer>
+ <layer name="wall1" width="64" height="17">
+  <properties>
+   <property name="dy" value="1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6EBADAIxEBUTQ37T9sZqHnB3QRJFQATJx0Q1umAsO3/Nx0AAPDpAQFmADI=
+  </data>
+ </layer>
+ <layer name="wall2" width="64" height="17">
+  <properties>
+   <property name="dy" value="1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6EBADAIxEBUTQ37T9sZqHnB3QRJFQA/TjogrNMBYf53u+kAAGDsAYDeAEI=
+  </data>
+ </layer>
+ <layer name="wall3" width="64" height="17">
+  <properties>
+   <property name="dy" value="1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0iEOACAMBMEqDIb/vxZf0+BIO+NWXnIRALxYRXd3iu5u+v6detr+bPr+/AcA+NkF37wAgw==
+  </data>
+ </layer>
+ <layer name="wall4" width="64" height="17">
+  <properties>
+   <property name="dy" value="1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt06ERAEAMAsGomJjvv9qvAIHLhFt5DkEVAMDRZr/mmf2a9P0jesp+hf3Z1C8AALt8PUMAkw==
+  </data>
+ </layer>
+ <layer name="wall5" width="64" height="17">
+  <properties>
+   <property name="dx" value="-1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6ENADAMBLGgkpLsP22l7FA9iD3BXRUAwF8nHRDW6YCw7f83HQDAeGOfADI=
+  </data>
+ </layer>
+ <layer name="wall6" width="64" height="17">
+  <properties>
+   <property name="dx" value="-1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6EBADAIxEAUpob9p2WLvuBugqQKAOCPTgeETTogzP9tLx0AnLevlwBC
+  </data>
+ </layer>
+ <layer name="wall7" width="64" height="17">
+  <properties>
+   <property name="dx" value="-1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6EBADAMw7CikZH+f+2+WECkC+wZAIC/TjogbNMBYf67tf/fdAAUe+qPAFI=
+  </data>
+ </layer>
+ <layer name="wall8" width="64" height="17">
+  <properties>
+   <property name="dx" value="-1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6EBACAMwLApDIb/r+WMiiUXtDMAAI1TB8ReHRDzv5v/3W4dwEofFJYAYg==
+  </data>
+ </layer>
+</map>
