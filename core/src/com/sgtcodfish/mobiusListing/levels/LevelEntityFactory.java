@@ -28,12 +28,14 @@ import com.sgtcodfish.mobiusListing.components.Collectible;
 import com.sgtcodfish.mobiusListing.components.DxLayer;
 import com.sgtcodfish.mobiusListing.components.DyLayer;
 import com.sgtcodfish.mobiusListing.components.FadableLayer;
+import com.sgtcodfish.mobiusListing.components.Interactable;
 import com.sgtcodfish.mobiusListing.components.Opacity;
 import com.sgtcodfish.mobiusListing.components.PlatformInputListener;
 import com.sgtcodfish.mobiusListing.components.PlatformSprite;
 import com.sgtcodfish.mobiusListing.components.PlatformSprite.PlatformSpriteOrientation;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.Solid;
+import com.sgtcodfish.mobiusListing.components.StaticSprite;
 import com.sgtcodfish.mobiusListing.components.TiledRenderable;
 
 /**
@@ -104,7 +106,9 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		levelNumber++;
-		Gdx.app.debug("NEXT_LEVEL", "On level " + (levelNumber + 1) + " of " + levels.size() + ".");
+		if (levelNumber <= levels.size()) {
+			Gdx.app.debug("NEXT_LEVEL", "On level " + (levelNumber + 1) + " of " + levels.size() + ".");
+		}
 	}
 
 	public String getCurrentLevelGroupName() {
@@ -149,6 +153,7 @@ public class LevelEntityFactory implements Disposable {
 			TiledMap map = loader.load(handle.path());
 
 			GroupManager groupManager = world.getManager(GroupManager.class);
+			String groupName = handle.name();
 
 			if (!isValidLevel(map, handle.name())) {
 				Gdx.app.debug("LOAD_LEVELS", handle.name() + " is an invalid level format. Skipping.");
@@ -157,18 +162,26 @@ public class LevelEntityFactory implements Disposable {
 
 			Entity level = generateLevelEntity(map);
 			Gdx.app.debug("LOAD_LEVELS", "Generated level entity for " + handle.name() + " - id = " + level.id + ".");
-			groupManager.add(level, handle.name());
+			groupManager.add(level, groupName);
 
 			for (int i = 0; i < map.getLayers().getCount(); i++) {
 				TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
 
 				if (isInteractableLayer(layer)) {
 					Gdx.app.debug("LOAD_LEVELS", "Loading interactible layer: " + layer.getName());
-					groupManager.add(generateInteractablePlatformEntity(layer), handle.name());
+					groupManager.add(generateInteractablePlatformEntity(layer), groupName);
+				} else if (isKeyLayer(layer)) {
+					Gdx.app.debug("LOAD_LEVELS", "Loading key layer.");
+					String keyName = handle.nameWithoutExtension().substring(0, 0).toUpperCase()
+							+ handle.nameWithoutExtension().substring(1) + "'s Key";
+					groupManager.add(generateKeyEntity(layer, keyName), groupName);
+				} else if (isExitLayer(layer)) {
+					Gdx.app.debug("LOAD_LEVELS", "Loading exit layer.");
+					groupManager.add(generateExitEntity(layer), groupName);
 				}
 			}
 
-			levels.add(handle.name());
+			levels.add(groupName);
 		}
 	}
 
@@ -181,11 +194,13 @@ public class LevelEntityFactory implements Disposable {
 		TiledRenderable r = world.createComponent(TiledRenderable.class);
 		r.map = map;
 		r.renderer = new OrthogonalTiledMapRenderer(r.map, 1.0f, batch);
-		r.renderableLayers = new String[map.getLayers().getCount()];
+		r.renderableLayers = new String[3];
 		r.renderableLayers[0] = "floor";
 		r.renderableLayers[1] = "levelnumber";
+		r.renderableLayers[2] = "text";
 		e.addComponent(r);
 
+		e.addToWorld();
 		e.disable();
 		return e;
 	}
@@ -252,6 +267,7 @@ public class LevelEntityFactory implements Disposable {
 			e.addComponent(fadableLayer);
 		}
 
+		e.addToWorld();
 		e.disable();
 		return e;
 	}
@@ -276,6 +292,37 @@ public class LevelEntityFactory implements Disposable {
 			collectible.name = keyName;
 			e.addComponent(collectible);
 
+			StaticSprite staticSprite = world.createComponent(StaticSprite.class);
+			staticSprite.textureRegion = layer.getCell((int) keyLoc.x, (int) keyLoc.y).getTile().getTextureRegion();
+			e.addComponent(staticSprite);
+
+			e.addToWorld();
+			e.disable();
+			return e;
+		}
+	}
+
+	protected Entity generateExitEntity(TiledMapTileLayer layer) {
+		Vector2 exitLoc = findFirstCell(layer);
+
+		if (exitLoc == null) {
+			throw new IllegalArgumentException("Could not find exit in layer \"" + layer.getName() + "\".");
+		} else {
+			Entity e = world.createEntity();
+
+			Position p = world.createComponent(Position.class);
+			p.position.x = exitLoc.x * layer.getTileWidth();
+			p.position.y = exitLoc.y * layer.getTileHeight();
+			e.addComponent(p);
+
+			Interactable i = world.createComponent(Interactable.class);
+			e.addComponent(i);
+
+			StaticSprite s = world.createComponent(StaticSprite.class);
+			s.textureRegion = layer.getCell((int) exitLoc.x, (int) exitLoc.y).getTile().getTextureRegion();
+			e.addComponent(s);
+
+			e.addToWorld();
 			e.disable();
 			return e;
 		}
@@ -407,6 +454,14 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		return texture;
+	}
+
+	protected static boolean isExitLayer(TiledMapTileLayer layer) {
+		return layer.getName().equals("exit");
+	}
+
+	protected static boolean isKeyLayer(TiledMapTileLayer layer) {
+		return layer.getName().equals("key");
 	}
 
 	/**

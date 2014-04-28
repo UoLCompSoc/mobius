@@ -17,7 +17,6 @@ import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
 import com.sgtcodfish.mobiusListing.systems.PlatformInputSystem;
-import com.sgtcodfish.mobiusListing.systems.PlatformRenderingSystem;
 import com.sgtcodfish.mobiusListing.systems.PlayerInputSystem;
 import com.sgtcodfish.mobiusListing.systems.SpriteRenderingSystem;
 import com.sgtcodfish.mobiusListing.systems.TiledRenderingSystem;
@@ -75,7 +74,6 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world.setSystem(new MovementSystem());
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));
-		world.setSystem(new PlatformRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
 
 		world.setManager(new GroupManager());
@@ -105,9 +103,14 @@ public class MobiusListingGame extends ApplicationAdapter {
 		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
 			timeSinceLastDebug += deltaTime;
 
-			if (Gdx.input.isKeyPressed(Keys.F9) && timeSinceLastDebug > DEBUG_COOLDOWN) {
-				timeSinceLastDebug = 0.0f;
-				debugEntities();
+			if (timeSinceLastDebug > DEBUG_COOLDOWN) {
+				if (Gdx.input.isKeyPressed(Keys.F9)) {
+					timeSinceLastDebug = 0.0f;
+					debugEntities();
+				} else if (Gdx.input.isKeyPressed(Keys.F10)) {
+					nextLevel();
+					timeSinceLastDebug = 0.0f;
+				}
 			}
 		}
 	}
