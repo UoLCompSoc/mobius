@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="64" height="17" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="map" tilewidth="32" tileheight="32">
+  <image source="../tilesets/tileset.png" width="160" height="160"/>
+ </tileset>
+ <tileset firstgid="26" name="numbers" tilewidth="32" tileheight="32">
+  <image source="../fontsets/numbers.png" width="320" height="32"/>
+ </tileset>
+ <layer name="floor" width="64" height="17">
+  <properties>
+   <property name="solid" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztVtsOgyAMhcQFtsADPsj//+kgOSSdUy5KUDZOciKlrW2hoIwNDAwMfGNytCAn849Cf54y3IiXQ16QS02IC2LuIZZLbG1y183brftAZfq2QKz+o7ojdlfhbP0vR4Pn01E6zo4asoIcbCR5+rkFek8L2cDXYF5CXkB6dkNvaRLTkjgzYZA1++zFCfUY+AmiE3gn1VO/LbS6U2r2lkiMS2K16vmacVRi/Ov1p7B3Z6+/ubn3+9ncw5ntFTVy//f67/QfUYqe964Get47ijcjIQYj
+  </data>
+ </layer>
+ <layer name="playerspawn" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztzjEBAAAIA6B99m9si3kICUgA4Ke5DgAAULNW5AAI
+  </data>
+ </layer>
+ <layer name="exit" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztziEBAAAIA7A3oH9bGtwgMFuCJUAz3wEAAADOFuDkABA=
+  </data>
+ </layer>
+ <layer name="key" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztzjENAAAIA7ApwL9cFOwj4WkVNAGa+Q4AAABwYgHTQAAP
+  </data>
+ </layer>
+ <layer name="levelnumber" width="64" height="17">
+  <data encoding="base64" compression="zlib">
+   eJztxsEJADAIADHn0P33bB+6hCZwcBEAXFW/7OYBAGCjB7cfAIU=
+  </data>
+ </layer>
+ <layer name="platform1" width="64" height="17">
+  <properties>
+   <property name="dx" value="6"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzrENACAMBLEIZsj+q+ZHIBWNLV1/VQA7J93Uv0cAAAAeDVyrABs=
+  </data>
+ </layer>
+ <layer name="wall1" width="64" height="17">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6EBADAIxEAUpob9p2WLvuBugqQK4I9OB4RNOiDs+v9LBwAAHLcnrgAy
+  </data>
+ </layer>
+ <layer name="wall2" width="64" height="17">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6EBADAIxEAUpob9p2WLvuBugqQK4L9OB4RNOiDs+v9LBwAAHLQlYgAy
+  </data>
+ </layer>
+ <layer name="wall3" width="64" height="17">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6EBACAMwLApDIb/r+WMiiUXtDMArVMHxF4dENv+f+sAAIAlPiMWADI=
+  </data>
+ </layer>
+ <layer name="wall4" width="64" height="17">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAADAtwERAAAB
+  </data>
+ </layer>
+ <layer name="wall5" width="64" height="17">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztwQENAAAAwqD3T20PBxQAAADAtwERAAAB
+  </data>
+ </layer>
+ <layer name="wall6" width="64" height="17">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztz6ERADAMxLCgkJLuP21XeNhLJGTqqn910JPdoCfb/n+CBgAAIPMAgQAAlA==
+  </data>
+ </layer>
+ <layer name="platform2" width="64" height="17">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzrEJAEAIwEDxZ3D/VXWGb0S4g/SJALgrp/dRbcwCAABrGv7KAD8=
+  </data>
+ </layer>
+ <layer name="platform5" width="64" height="17">
+  <properties>
+   <property name="dx" value="7"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzrEJAEAIwEDxZ3D/VbX4HQS5g/SJAAAAuCmn96vlF2BXA4WwAB4=
+  </data>
+ </layer>
+ <layer name="platform3" width="64" height="17" opacity="0.48">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzrEJADAIAEGJM7j/qmYBOyFF7uD7jwAAAH53bjlUD78AtjTW4AAq
+  </data>
+ </layer>
+ <layer name="platform4" width="64" height="17">
+  <properties>
+   <property name="dx" value="8"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzrEJADAMBDGTzOD9V/VvEHCTRoLrrwoAAHZOuql/jwDAwwC+lAAb
+  </data>
+ </layer>
+</map>
