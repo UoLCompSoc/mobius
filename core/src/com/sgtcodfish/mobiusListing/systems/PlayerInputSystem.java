@@ -4,6 +4,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.Filter;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
@@ -17,10 +18,8 @@ import com.sgtcodfish.mobiusListing.player.PlayerConstants;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class PlayerInputSystem extends EntityProcessingSystem {
-	private ComponentMapper<PlayerInputListener>	inputListenerMapper		= null;
-	private ComponentMapper<Position>				positionMapper			= null;
-	private ComponentMapper<PlayerState>			animationStateMapper	= null;
-	private ComponentMapper<Velocity>				velocityMapper			= null;
+	private ComponentMapper<PlayerState>	animationStateMapper	= null;
+	private ComponentMapper<Velocity>		velocityMapper			= null;
 
 	@SuppressWarnings("unchecked")
 	public PlayerInputSystem() {
@@ -33,8 +32,6 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 
 	@Override
 	public void initialize() {
-		inputListenerMapper = world.getMapper(PlayerInputListener.class);
-		positionMapper = world.getMapper(Position.class);
 		velocityMapper = world.getMapper(Velocity.class);
 		animationStateMapper = world.getMapper(PlayerState.class);
 	}
@@ -45,9 +42,9 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 
 		PlayerState ps = animationStateMapper.get(e);
 
-		if (Gdx.input.isKeyPressed(Keys.A)) {
-			velocityMapper.get(e).velocity.x = -PlayerConstants.RUN_VELOCITY;
-			ps.state = HumanoidAnimationState.RUNNING;
+		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG && Gdx.input.isKeyPressed(Keys.A)) {
+			velocityMapper.get(e).velocity.x = 0;
+			ps.state = HumanoidAnimationState.STANDING;
 		} else if (Gdx.input.isKeyPressed(Keys.D)) {
 			velocityMapper.get(e).velocity.x = +PlayerConstants.RUN_VELOCITY;
 			ps.state = HumanoidAnimationState.RUNNING;

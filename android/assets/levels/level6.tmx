@@ -11,43 +11,51 @@
    <property name="solid" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo4A4wALE4kDMSIbYKBicgBeKhaA0FxBzArEgkjgoHlkZIPFKDJsDqlcMahaIFoeaLYhmD7GAnUQ2tQExdvIMgP20tBOX/fSyExkMhJ2jgPYAAMSUAgs=
-  </data>
- </layer>
- <layer name="platform1" width="32" height="17" opacity="0.49">
-  <properties>
-   <property name="minOpacity" value="0.25"/>
-  </properties>
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo2BwAiYgZgZi0YF2yCgYBaNgFIwCqgMAoPQAGw==
-  </data>
- </layer>
- <layer name="exit" width="32" height="17">
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjILhD4QH2gGjYBSMAhQAAEx8ABQ=
-  </data>
- </layer>
- <layer name="platform2" width="32" height="17">
-  <properties>
-   <property name="dx" value="13"/>
-  </properties>
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo4D2gAmImYFYdKAdMgpGwSgYBaNgUAAApjwAGw==
-  </data>
- </layer>
- <layer name="key" width="32" height="17">
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFwxHwDbQDRsEoGAWjYBSMAjwAAGWwAA8=
+   eJxjYBgF+AALEIsDMeNAO4RKgJVCeUoBOx45UFjzDKD91AL4whCX/6gZ7qT4EZa2Qe4Chb8YEPMCsRAQcwExJ5QPEheEYi6omDgUi0HV86KZxYEkDlMDM48TKjZYAMi9wyWPUwpgZR46xhU+uNTD9NC6TCEE6JHn8QFal2mEwGCrw5DdAwB3XAOC
   </data>
  </layer>
  <layer name="playerspawn" width="32" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUDCRgHGgHjIJRMApGwQAAAA18AAI=
+   eJxjYBgFo2AUDCTgHWgHjIJRMApGwQAAAElMAA4=
+  </data>
+ </layer>
+ <layer name="platform1" width="32" height="17" opacity="0.37">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFMMAExMxALDrQDhkFo2AUjIJRMAqGOQAAyZQAGw==
+  </data>
+ </layer>
+ <layer name="wall2" width="32" height="17" opacity="0.5">
+  <properties>
+   <property name="minOpacity" value="0.25"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjALSANsA2y8wav+AAu4Btn8UDA8AANjIAEI=
+  </data>
+ </layer>
+ <layer name="platform2" width="32" height="17">
+  <properties>
+   <property name="dx" value="1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUUBswATEzEhYdWOeMglEwCkbBoAMAq+gAIQ==
+  </data>
+ </layer>
+ <layer name="key" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjILhA/gG2gGjYBSMAqIAADvoAA8=
+  </data>
+ </layer>
+ <layer name="exit" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBj8gH+gHTAKRsEoGAWjYBSMAqoCAH5kABA=
   </data>
  </layer>
  <layer name="levelnumber" width="32" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2BkAykkLA3Fo2AUjIJRMApoCwDYYgCF
+   eJxjYBgFo2BkAykoloZiqYF1zigYBaNgFIwIAADYagCF
   </data>
  </layer>
 </map>

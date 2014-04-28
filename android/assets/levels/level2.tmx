@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="32" height="17" tilewidth="32" tileheight="32">
- <tileset firstgid="1" name="map" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="Map" tilewidth="32" tileheight="32">
   <image source="../tilesets/tileset.png" width="160" height="160"/>
+ </tileset>
+ <tileset firstgid="26" name="numbers" tilewidth="32" tileheight="32">
+  <image source="../fontsets/numbers.png" width="320" height="32"/>
  </tileset>
  <layer name="floor" width="32" height="17">
   <properties>
@@ -40,6 +43,11 @@
  <layer name="playerspawn" width="32" height="17">
   <data encoding="base64" compression="zlib">
    eJxjYBgFo2AUDCRgHGgHjIJRMApGwQAAAA18AAI=
+  </data>
+ </layer>
+ <layer name="levelnumber" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2BkAykkLA2lR8EoGAWjYBTQFgAA0vYAhA==
   </data>
  </layer>
 </map>

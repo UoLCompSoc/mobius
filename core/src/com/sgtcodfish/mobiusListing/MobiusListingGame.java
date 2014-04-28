@@ -1,11 +1,13 @@
 package com.sgtcodfish.mobiusListing;
 
+import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.managers.GroupManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -43,6 +45,9 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 	public LevelEntityFactory	levelEntityFactory	= null;
 
+	private final float			DEBUG_COOLDOWN		= 2.0f;
+	private float				timeSinceLastDebug	= DEBUG_COOLDOWN;
+
 	public MobiusListingGame() {
 		this(false);
 	}
@@ -72,6 +77,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world.setSystem(new TiledRenderingSystem(batch, camera));
 		world.setSystem(new PlatformRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
+
 		world.setManager(new GroupManager());
 
 		world.initialize();
@@ -84,15 +90,10 @@ public class MobiusListingGame extends ApplicationAdapter {
 		nextLevel();
 	}
 
-	protected void nextLevel() {
-		for (Entity e : levelEntityFactory.getNextLevelEntityList()) {
-			world.addEntity(e);
-		}
-	}
-
 	@Override
 	public void render() {
-		world.setDelta(Gdx.graphics.getDeltaTime());
+		float deltaTime = Gdx.graphics.getDeltaTime();
+		world.setDelta(deltaTime);
 
 		camera.update();
 
@@ -100,6 +101,21 @@ public class MobiusListingGame extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		world.process();
+
+		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
+			timeSinceLastDebug += deltaTime;
+
+			if (Gdx.input.isKeyPressed(Keys.F9) && timeSinceLastDebug > DEBUG_COOLDOWN) {
+				timeSinceLastDebug = 0.0f;
+				debugEntities();
+			}
+		}
+	}
+
+	protected void nextLevel() {
+		for (Entity e : levelEntityFactory.getNextLevelEntityList()) {
+			e.enable();
+		}
 	}
 
 	@Override
@@ -128,6 +144,29 @@ public class MobiusListingGame extends ApplicationAdapter {
 		playerEntity = null;
 		if (world != null) {
 			world.dispose();
+		}
+	}
+
+	public void debugEntities() {
+		final String delim = ", ";
+
+		Gdx.app.debug("DEBUG_ENTITIES", "There are " + world.getEntityManager().getActiveEntityCount()
+				+ " active entities. Enabled entities:");
+
+		for (Entity e : world.getEntityManager().entities) {
+			if (e == null || !e.isEnabled())
+				continue;
+			Gdx.app.debug("DEBUG_ENTITIES", "----- Entity ID: " + e.id + " -----");
+
+			String components = "";
+
+			for (Component c : e.getComponents()) {
+				components += c.getClass().getSimpleName() + delim;
+			}
+
+			components = components.substring(0, components.length() - delim.length());
+
+			Gdx.app.debug("DEBUG_ENTITIES", components);
 		}
 	}
 }

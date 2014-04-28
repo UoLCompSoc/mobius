@@ -8,6 +8,6 @@ package com.sgtcodfish.mobiusListing.player;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class PlayerConstants {
-	public static final float	RUN_VELOCITY	= 2.0f;
-	public static final float	JUMP_VELOCITY	= 5.0f;
+	public static final float	RUN_VELOCITY	= 10.0f;
+	public static final float	JUMP_VELOCITY	= 10.0f;
 }

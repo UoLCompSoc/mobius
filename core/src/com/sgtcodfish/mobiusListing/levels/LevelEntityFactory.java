@@ -44,7 +44,8 @@ import com.sgtcodfish.mobiusListing.components.TiledRenderable;
 public class LevelEntityFactory implements Disposable {
 	public static final String		DEFAULT_LEVEL_FOLDER	= "levels/";
 	public static final String[]	MAP_NAMES				= { "titlescreen.tmx", "level1.tmx", "level2.tmx",
-			"level3.tmx", "level4.tmx"						};
+			"level3.tmx", "level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx",
+			"level10.tmx", "level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level15.tmx", "level16.tmx" };
 
 	private static final int		PLATFORM_TILE_WIDTH		= 32;
 	private static final int		PLATFORM_TILE_HEIGHT	= 32;
@@ -63,7 +64,7 @@ public class LevelEntityFactory implements Disposable {
 	public LevelEntityFactory(World world, Batch batch, String folderName) {
 		this.world = world;
 		this.batch = batch;
-		loadLevelsFromFolder(folderName);
+		loadLevelsFromList(folderName, MAP_NAMES);
 	}
 
 	/**
@@ -77,132 +78,96 @@ public class LevelEntityFactory implements Disposable {
 	public Array<Entity> getNextLevelEntityList() {
 		nextLevel();
 
-		if (levels.size() <= levelNumber) {
+		if (levelNumber >= levels.size()) {
 			return null;
 		} else {
+			if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
+				Gdx.app.debug("NEXT_LEVEL", "Level's manager contains "
+						+ world.getManager(GroupManager.class).getEntities(levels.get(levelNumber)).size + " entities.");
+			}
 			return world.getManager(GroupManager.class).getEntities(levels.get(levelNumber));
 		}
 	}
 
 	protected void nextLevel() {
 		if (levelNumber >= 0) {
+			int deletedCount = 0;
+
 			for (Entity e : world.getManager(GroupManager.class).getEntities(getCurrentLevelGroupName())) {
 				e.deleteFromWorld();
+				deletedCount++;
 			}
+
+			Gdx.app.debug("NEXT_LEVEL", "Deleted entities from old level: " + deletedCount + " deleted.");
 		}
 
 		levelNumber++;
+		Gdx.app.debug("NEXT_LEVEL", "On level " + (levelNumber + 1) + " of " + levels.size() + ".");
 	}
 
 	public String getCurrentLevelGroupName() {
 		return levels.get(levelNumber);
 	}
 
-	protected void loadLevelsFromList(String[] nameList) {
+	/**
+	 * <p>
+	 * Loads all of the levels in the given list. They must exist.
+	 * <p>
+	 * <strong>Warning:</strong Calling this function while levels are loaded
+	 * will delete all loaded levels.
+	 * </p>
+	 * 
+	 * @param prefix
+	 *        The prefix to prepend to all level paths in nameList. Can be null.
+	 * @param nameList
+	 *        A list of paths to levels.
+	 */
+	protected void loadLevelsFromList(String prefix, String[] nameList) {
 		if (nameList == null) {
 			throw new IllegalArgumentException("Trying to load levels from null list.");
+		} else if (levels != null) {
+			dispose();
 		}
 
+		TmxMapLoader loader = new TmxMapLoader();
+		levels = new ArrayList<>(nameList.length);
+
 		for (String s : nameList) {
+			if (prefix != null) {
+				s = prefix + s;
+			}
+
 			FileHandle handle = Gdx.files.internal(s);
 
 			if (!handle.exists()) {
 				Gdx.app.debug("LOAD_LEVELS_LIST", "Level does not exist: " + s + " when loading from list. Skipping.");
 				continue;
 			}
-		}
-	}
 
-	/**
-	 * <p>
-	 * Loads all the levels in a specified folder. For internal use; construct a
-	 * new LevelEntityFactory to load the levels in a new folder.
-	 * </p>
-	 * 
-	 * @param levelFolder
-	 *        The folder containing the level files.
-	 */
-	protected void loadLevelsFromFolder(String levelFolder) {
-		FileHandle handle = Gdx.files.internal(levelFolder);
-		FileHandle[] levelHandles = null;
+			TiledMap map = loader.load(handle.path());
 
-		if (!handle.isDirectory()) {
-			Gdx.app.debug("LOAD_LEVELS",
-					"Non-directory detected by level loader, attempting to load files from list in: " + levelFolder);
-			String[] levelNames = handle.readString().split("\n");
-			levelHandles = new FileHandle[levelNames.length];
-
-			for (int i = 0; i < levelNames.length; i++) {
-				levelNames[i] = levelFolder + levelNames[i];
-				FileHandle temp = Gdx.files.internal(levelNames[i]);
-
-				if (temp.exists()) {
-					Gdx.app.debug("LOAD_LEVELS", "Found level: " + levelNames[i]);
-					levelHandles[i] = temp;
-				}
-			}
-		} else {
-			Gdx.app.debug("LOAD_LEVELS", "Directory detected, loading from handle.list.");
-			levelHandles = handle.list(".tmx");
-		}
-
-		if (levelHandles.length == 0) {
-			String message = "No levels found in folder: " + levelFolder;
-			Gdx.app.debug("LOAD_LEVELS", message);
-			throw new IllegalArgumentException(message);
-		}
-
-		Gdx.app.debug("LOAD_LEVELS", String.valueOf(levelHandles.length) + " levels found in " + levelFolder + ".");
-
-		levels = new ArrayList<>();
-		TmxMapLoader loader = new TmxMapLoader();
-
-		for (FileHandle fh : levelHandles) {
-			TiledMap map = loader.load(fh.path());
 			GroupManager groupManager = world.getManager(GroupManager.class);
 
-			if (!isValidLevel(map, fh.path())) {
-				Gdx.app.debug("LOAD_LEVELS", fh.path() + " is an invalid level format. Skipping.");
+			if (!isValidLevel(map, handle.name())) {
+				Gdx.app.debug("LOAD_LEVELS", handle.name() + " is an invalid level format. Skipping.");
 				continue;
 			}
 
-			groupManager.add(generateLevelEntity(map), fh.name());
+			Entity level = generateLevelEntity(map);
+			Gdx.app.debug("LOAD_LEVELS", "Generated level entity for " + handle.name() + " - id = " + level.id + ".");
+			groupManager.add(level, handle.name());
 
 			for (int i = 0; i < map.getLayers().getCount(); i++) {
-				TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(0);
+				TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
+
 				if (isInteractableLayer(layer)) {
-					groupManager.add(generateInteractablePlatformEntity(layer), fh.name());
+					Gdx.app.debug("LOAD_LEVELS", "Loading interactible layer: " + layer.getName());
+					groupManager.add(generateInteractablePlatformEntity(layer), handle.name());
 				}
 			}
 
-			levels.add(fh.name());
+			levels.add(handle.name());
 		}
-
-		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
-			String levelNameDebug = "Following levels were loaded: ";
-			String delim = ", ";
-
-			for (FileHandle fh : levelHandles) {
-				levelNameDebug += fh.name() + delim;
-			}
-
-			levelNameDebug = levelNameDebug.substring(0, levelNameDebug.length() - delim.length()) + ".";
-			Gdx.app.debug("LOAD_LEVELS", levelNameDebug);
-		}
-	}
-
-	protected boolean isInteractableLayer(TiledMapTileLayer layer) {
-		MapProperties props = layer.getProperties();
-
-		if (props != null) {
-			for (String key : WorldConstants.interactableLayersProperties) {
-				if (props.get(key) != null) {
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	protected Entity generateLevelEntity(TiledMap map) {
@@ -219,6 +184,8 @@ public class LevelEntityFactory implements Disposable {
 		r.renderableLayers[1] = "levelnumber";
 		e.addComponent(r);
 
+		e.disable();
+		e.addToWorld();
 		return e;
 	}
 
@@ -284,6 +251,8 @@ public class LevelEntityFactory implements Disposable {
 			e.addComponent(fadableLayer);
 		}
 
+		e.addToWorld();
+		e.disable();
 		return e;
 	}
 
@@ -381,10 +350,10 @@ public class LevelEntityFactory implements Disposable {
 		Pixmap middle = new Pixmap(PLATFORM_TILE_WIDTH, PLATFORM_TILE_HEIGHT, Format.RGBA8888);
 		Pixmap bottomEnd = new Pixmap(PLATFORM_TILE_WIDTH, PLATFORM_TILE_HEIGHT, Format.RGBA8888);
 
-		// image is BOTTOM TOP MIDDLE
-		topEnd.drawPixmap(platform, 0, 0, 0, PLATFORM_TILE_HEIGHT * 1, PLATFORM_TILE_WIDTH, PLATFORM_TILE_HEIGHT);
-		middle.drawPixmap(platform, 0, 0, 0, PLATFORM_TILE_HEIGHT * 2, PLATFORM_TILE_WIDTH, PLATFORM_TILE_HEIGHT);
-		bottomEnd.drawPixmap(platform, 0, 0, 0, PLATFORM_TILE_HEIGHT * 0, PLATFORM_TILE_WIDTH, PLATFORM_TILE_HEIGHT);
+		// image is BOTTOM TOP MIDDLE (laid out horizontally)
+		topEnd.drawPixmap(platform, 0, 0, PLATFORM_TILE_WIDTH * 1, 0, PLATFORM_TILE_WIDTH, PLATFORM_TILE_HEIGHT);
+		middle.drawPixmap(platform, 0, 0, PLATFORM_TILE_WIDTH * 2, 0, PLATFORM_TILE_WIDTH, PLATFORM_TILE_HEIGHT);
+		bottomEnd.drawPixmap(platform, 0, 0, PLATFORM_TILE_WIDTH * 0, 0, PLATFORM_TILE_WIDTH, PLATFORM_TILE_HEIGHT);
 
 		texture.draw(topEnd, 0, 0);
 
@@ -413,6 +382,31 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		return texture;
+	}
+
+	/**
+	 * <p>
+	 * Returns true if the layer has a property as listed in
+	 * {@link WorldConstants#interactableLayersProperties}.
+	 * </p>
+	 * 
+	 * @param layer
+	 *        The layer whose properties are to be checked.
+	 * @return true if the layer validates as an interactable layer, false for
+	 *         all other layers.
+	 */
+	protected static boolean isInteractableLayer(TiledMapTileLayer layer) {
+		MapProperties props = layer.getProperties();
+
+		if (props != null) {
+			for (String key : WorldConstants.interactableLayersProperties) {
+				if (props.get(key) != null) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -528,7 +522,7 @@ public class LevelEntityFactory implements Disposable {
 
 		int otherLayers = 0, dxLayers = 0, dyLayers = 0, minOpacityLayers = 0, propLayers = 0;
 
-		Gdx.app.debug("IS_VALID_LEVEL", mapName);
+		Gdx.app.debug("IS_VALID_LEVEL", "Checking " + mapName + ".");
 
 		for (int i = 0; i < map.getLayers().getCount(); i++) {
 			TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
@@ -595,11 +589,19 @@ public class LevelEntityFactory implements Disposable {
 		return retVal;
 	}
 
-	@Override
-	public void dispose() {
+	public void reset() {
+		levelNumber = -1;
 		if (levels != null) {
 			levels.clear();
 			levels = null;
 		}
+	}
+
+	@Override
+	public void dispose() {
+		reset();
+
+		world = null;
+		batch = null;
 	}
 }

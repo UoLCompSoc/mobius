@@ -11,43 +11,43 @@
    <property name="solid" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo4A4wALE4kDMSIbYKBicgBeKhaA0FxBzArEgkjgoHlkZIPFKDJsDqlcMahaIFoeaLYhmD7GAnUQ2tQExdvIMgP20tBOX/fSyExkMhJ2jgPYAAMSUAgs=
-  </data>
- </layer>
- <layer name="platform1" width="32" height="17" opacity="0.49">
-  <properties>
-   <property name="minOpacity" value="0.25"/>
-  </properties>
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo2BwAiYgZgZi0YF2yCgYBaNgFIwCqgMAoPQAGw==
-  </data>
- </layer>
- <layer name="exit" width="32" height="17">
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUjILhD4QH2gGjYBSMAhQAAEx8ABQ=
-  </data>
- </layer>
- <layer name="platform2" width="32" height="17">
-  <properties>
-   <property name="dx" value="13"/>
-  </properties>
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFo4D2gAmImYFYdKAdMgpGwSgYBaNgUAAApjwAGw==
-  </data>
- </layer>
- <layer name="key" width="32" height="17">
-  <data encoding="base64" compression="zlib">
-   eJxjYBgFwxHwDbQDRsEoGAWjYBSMAjwAAGWwAA8=
+   eJxjYBhYwDrA9rMPEvtZgFgciBkHyH4YoLc7cIU/vdxBKP5xuQObODlupjT9Ycs/pOQpHiDmBWJOIOaCsjkYIP4QA2JBKJsLSgtB1cD8CXI/C5J6ZDFOqFmCSDQnlIaxKQU8RIqRCwiFJbXSAS4wWMqnUfsHBlAzLQ9GAACUowMA
   </data>
  </layer>
  <layer name="playerspawn" width="32" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUDCRgHGgHjIJRMApGwQAAAA18AAI=
+   eJxjYBgFo2AUDCTgHGgHjIJRMApGwQAAADVcAAo=
+  </data>
+ </layer>
+ <layer name="key" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUDAbAN9AOGAWjYBSMAjoCAE3YAA8=
+  </data>
+ </layer>
+ <layer name="exit" width="32" height="17">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFMMA/0A4YBaNgFIyCUTAKRggAAHhMABA=
+  </data>
+ </layer>
+ <layer name="platform1" width="32" height="17">
+  <properties>
+   <property name="dx" value="13"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AU0AowATEzEIsOtENGwSgYBaNgkAEAjQwAGw==
+  </data>
+ </layer>
+ <layer name="wall1" width="32" height="17">
+  <properties>
+   <property name="dy" value="1"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AU0AOwDbD9AoPAflY0TG/72dEwPQH3ANsPAjwDbD+6GwYKwNwwkIBngO0fDAAAx6IA6A==
   </data>
  </layer>
  <layer name="levelnumber" width="32" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2BkAykkLA3Fo2AUjIJRMApoCwDYYgCF
+   eJxjYBgFo2BkAykolkaiR8EoGAWjYBTQFgAA2GYAhQ==
   </data>
  </layer>
 </map>

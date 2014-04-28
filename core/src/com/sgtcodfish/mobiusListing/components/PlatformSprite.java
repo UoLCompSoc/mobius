@@ -19,9 +19,10 @@ public class PlatformSprite implements Component {
 		size = 0;
 		orientation = PlatformSpriteOrientation.NONE;
 		rectangle = null;
+
 		if (texture != null) {
-			texture = null;
 			texture.dispose();
+			texture = null;
 		}
 	}
 
