@@ -15,8 +15,11 @@ import com.sgtcodfish.mobiusListing.components.Inventory;
 import com.sgtcodfish.mobiusListing.components.Linked;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
+import com.sgtcodfish.mobiusListing.player.PlayerConstants;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
+import com.sgtcodfish.mobiusListing.systems.LevelAdvanceSystem;
+import com.sgtcodfish.mobiusListing.systems.LinkingSystem;
 import com.sgtcodfish.mobiusListing.systems.MovementSystem;
 import com.sgtcodfish.mobiusListing.systems.PlatformInputSystem;
 import com.sgtcodfish.mobiusListing.systems.PlayerInputSystem;
@@ -36,22 +39,23 @@ public class MobiusListingGame extends ApplicationAdapter {
 		TITLE_SCREEN, PLAYING;
 	}
 
-	public static boolean			DEBUG				= false;
+	public static boolean			DEBUG					= false;
 
-	private SpriteBatch				batch				= null;
-	private Camera					camera				= null;
+	private SpriteBatch				batch					= null;
+	private Camera					camera					= null;
 
-	public World					world				= null;
+	public World					world					= null;
 
-	public TerrainCollisionSystem	collisionSystem		= null;
+	public MovementSystem			movementSystem			= null;
+	public TerrainCollisionSystem	terrainCollisionSystem	= null;
 
-	public PlayerEntityFactory		playerEntityFactory	= null;
-	private Entity					playerEntity		= null;
+	public PlayerEntityFactory		playerEntityFactory		= null;
+	private Entity					playerEntity			= null;
 
-	public LevelEntityFactory		levelEntityFactory	= null;
+	public LevelEntityFactory		levelEntityFactory		= null;
 
-	private final float				DEBUG_COOLDOWN		= 2.0f;
-	private float					timeSinceLastDebug	= DEBUG_COOLDOWN;
+	private final float				DEBUG_COOLDOWN			= 1.0f;
+	private float					timeSinceLastDebug		= DEBUG_COOLDOWN;
 
 	public MobiusListingGame() {
 		this(false);
@@ -75,19 +79,24 @@ public class MobiusListingGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		collisionSystem = new TerrainCollisionSystem(null);
+		movementSystem = new MovementSystem(0.0f);
+		terrainCollisionSystem = new TerrainCollisionSystem(null);
 
 		world.setSystem(new PlayerInputSystem(this));
 		world.setSystem(new PlatformInputSystem(camera));
 
-		world.setSystem(collisionSystem);
-		world.setSystem(new SolidProcessingSystem());
+		world.setSystem(new SolidProcessingSystem(terrainCollisionSystem));
+		world.setSystem(terrainCollisionSystem);
 
-		world.setSystem(new MovementSystem());
+		world.setSystem(movementSystem);
+
+		world.setSystem(new LinkingSystem());
 
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
+
+		world.setSystem(new LevelAdvanceSystem(this), true);
 
 		world.setManager(new MobiusGroupManager());
 
@@ -110,7 +119,16 @@ public class MobiusListingGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		// TODO: Fix dirty hack
+		PlayerConstants.interacting = Gdx.input.isKeyPressed(Keys.W);
 		world.process();
+		timeSinceLastDebug += deltaTime;
+		if (timeSinceLastDebug > DEBUG_COOLDOWN) {
+			if (Gdx.input.isKeyPressed(Keys.F10)) {
+				nextLevel();
+				timeSinceLastDebug = 0.0f;
+			}
+		}
 
 		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
 			timeSinceLastDebug += deltaTime;
@@ -124,9 +142,6 @@ public class MobiusListingGame extends ApplicationAdapter {
 				} else if (Gdx.input.isKeyPressed(Keys.F9)) {
 					timeSinceLastDebug = 0.0f;
 					debugEntities();
-				} else if (Gdx.input.isKeyPressed(Keys.F10)) {
-					nextLevel();
-					timeSinceLastDebug = 0.0f;
 				} else if (Gdx.input.isKeyPressed(Keys.F11)) {
 					String inventString = "";
 
@@ -141,17 +156,21 @@ public class MobiusListingGame extends ApplicationAdapter {
 		}
 	}
 
-	protected void nextLevel() {
-		levelEntityFactory.loadNextLevel();
+	public void nextLevel() {
+		if (levelEntityFactory.loadNextLevel() == false) {
+			Gdx.app.exit();
+		}
 
-		collisionSystem.setCollisionMap(levelEntityFactory.getCurrentLevelCollisionMap());
+		terrainCollisionSystem.setCollisionMap(levelEntityFactory.getCurrentLevelCollisionMap());
+		movementSystem.doNextLevel(levelEntityFactory.getCurrentLevelCollisionMap().actualWidthInWorld());
 		resetPlayer();
+		playerEntity.getComponent(Inventory.class).inventoryList.clear();
 	}
 
 	public void resetPlayer() {
 		// TODO: More elegant manipulation of inventory.
 		playerEntity.getComponent(Position.class).position.set(levelEntityFactory.getCurrentLevelSpawn());
-		playerEntity.getComponent(Inventory.class).inventoryList.clear();
+		// playerEntity.getComponent(Inventory.class).inventoryList.clear();
 	}
 
 	@Override

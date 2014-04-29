@@ -123,6 +123,7 @@ public class PlayerEntityFactory implements Disposable {
 		d.animationMap = animationMap;
 		d.spriteWidth = DEFAULT_PLAYER_TEXTURE_WIDTH;
 		d.spriteHeight = DEFAULT_PLAYER_TEXTURE_HEIGHT;
+		d.mirrored = false;
 		e.addComponent(d);
 
 		PlayerInputListener pil = world.createComponent(PlayerInputListener.class);

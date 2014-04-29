@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="64" height="17" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="map" tilewidth="32" tileheight="32">
-  <image source="../../../../tilesets/tileset.png" width="160" height="160"/>
+  <image source="../tilesets/tileset.png" width="160" height="160"/>
  </tileset>
  <tileset firstgid="26" name="mobius64" tilewidth="32" tileheight="32">
-  <image source="../../../../fontsets/mobius64.png" width="384" height="64"/>
+  <image source="../fontsets/mobius64.png" width="384" height="64"/>
  </tileset>
  <tileset firstgid="50" name="upright32" tilewidth="32" tileheight="32">
-  <image source="../../../../fontsets/upright32.png" width="160" height="160"/>
+  <image source="../fontsets/upright32.png" width="160" height="160"/>
  </tileset>
  <tileset firstgid="75" name="upside32" tilewidth="32" tileheight="32">
-  <image source="../../../../fontsets/upside32.png" width="160" height="160"/>
+  <image source="../fontsets/upside32.png" width="160" height="160"/>
  </tileset>
  <layer name="floor" width="64" height="17">
   <properties>
@@ -22,12 +22,12 @@
  </layer>
  <layer name="text" width="64" height="17">
   <data encoding="base64" compression="zlib">
-   eJztztkNgkAYRWHqEBRRcRcVXFBBQS0Al/5r8TxQwkwmJvck39vkn+t5Silltw58BOiihxB9RBhgiBFiNxOtNsYEU8wwxwJLrJBgjQ22jjamyCzcPSLHCWdcsMMeBxTtuxJX3FAZ/L/GHQ88Dd5VSrmvwQtvfPB1O0cppdQf9AOvlwmA
+   eJztzjcOwlAQRVGvg5xzjibHjiByhv0vg1tQUiDLX5bQu9LpRjNjWUopZTYf/AggiBDCiCCKGOJIIOnNi0ZLIY0MssghjwKKKKGMCqoe/VhD3cDeNmx00EUPDTTRQv8zN8AQI4xdvD/BFDPMXdyrlPq9I04444IrbrjjgSdeDvZusMUOexy+zCywxAprBzeUUkr9V2+x/Q4x
   </data>
  </layer>
  <layer name="playerspawn" width="64" height="17">
   <data encoding="base64" compression="zlib">
-   eJztzjEBAAAIA6BFsH9aW8xDSEACAD/NdQAAgJoFsMAAEQ==
+   eJztzkERAAAIA6AVsH9dU+x8CAlIAOC3uQ4AAFC3kmQADg==
   </data>
  </layer>
  <layer name="exit" width="64" height="17">
@@ -37,7 +37,7 @@
  </layer>
  <layer name="key" width="64" height="17">
   <data encoding="base64" compression="zlib">
-   eJztzrENgCAABVEmcDHUDlRQ9h/Dm0ASLGjuJdf+/BAkSZL0ZZl9YJJIK220D24kynTQSRcVqnTTQ+33U0mS+l5mVQTA
+   eJztzgENAAAIA6AnsH9cY9w5SEACAHw27QAAwAELkBgADw==
   </data>
  </layer>
 </map>

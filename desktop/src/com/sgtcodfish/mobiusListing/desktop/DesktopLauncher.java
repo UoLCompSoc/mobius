@@ -15,6 +15,6 @@ public class DesktopLauncher {
 		config.addIcon("icons/icon32.png", FileType.Internal);
 		config.addIcon("icons/icon16.png", FileType.Internal);
 
-		new LwjglApplication(new MobiusListingGame(true), config);
+		new LwjglApplication(new MobiusListingGame(false), config);
 	}
 }

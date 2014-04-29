@@ -49,13 +49,13 @@ public class TerrainCollisionMap {
 	}
 
 	protected boolean mapRetrieve(int tileX, int tileY) {
-		return collisionMap.get(tileY * layer.getWidth() + tileX).booleanValue();
+		return collisionMap.get((int) (tileY * (actualWidthInTiles()) + tileX)).booleanValue();
 	}
 
 	public int worldToTileCoordinatesX(float x) {
 		int tx = (int) (x / layer.getTileWidth());
 
-		if (tx < 0 || tx >= layer.getWidth()) {
+		if (tx < 0 || tx >= actualWidthInTiles()) {
 			tx = -1;
 		}
 
@@ -86,5 +86,13 @@ public class TerrainCollisionMap {
 
 	public float worldToGridWorldCoordinatesY(float y) {
 		return y - (y % layer.getTileHeight());
+	}
+
+	public float actualWidthInTiles() {
+		return layer.getWidth() * 2;
+	}
+
+	public float actualWidthInWorld() {
+		return layer.getWidth() * layer.getTileWidth() * 2;
 	}
 }

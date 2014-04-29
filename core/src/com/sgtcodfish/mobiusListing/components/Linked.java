@@ -10,7 +10,7 @@ import com.artemis.World;
  */
 public class Linked implements Component {
 	public interface LinkPerformer {
-		public void performLink(Entity other);
+		public void perform(Entity other);
 	}
 
 	public Entity			linkedEntity	= null;
@@ -33,6 +33,17 @@ public class Linked implements Component {
 		parent.addComponent(link);
 	}
 
+	/**
+	 * Does nothing
+	 * 
+	 * @author Ashley Davis (SgtCoDFish)
+	 */
+	public static class PassLink implements LinkPerformer {
+		@Override
+		public void perform(Entity other) {
+		}
+	}
+
 	public class PositionLinkPerformer implements LinkPerformer {
 		private ComponentMapper<Position>	positionMapper	= null;
 		private float						yFlip			= 0.0f;
@@ -43,9 +54,13 @@ public class Linked implements Component {
 		}
 
 		@Override
-		public void performLink(Entity other) {
-			Position thisPos = positionMapper.get(linkedEntity);
-			Position otherPos = positionMapper.get(other);
+		public void perform(Entity parent) {
+			Position thisPos = positionMapper.get(parent);
+			if (linkedEntity == null || thisPos == null)
+				return;
+			Position otherPos = positionMapper.get(linkedEntity);
+			if (otherPos == null)
+				return;
 
 			otherPos.position.y = yFlip - thisPos.position.y;
 		}

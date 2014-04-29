@@ -18,13 +18,17 @@ public class MovementSystem extends EntityProcessingSystem {
 
 	private ComponentMapper<PlayerState>	stateMapper		= null;
 
+	private float							xBound			= 0.0f;
+
 	@SuppressWarnings("unchecked")
-	public MovementSystem() {
-		this(Filter.allComponents(Position.class, Velocity.class));
+	public MovementSystem(float xBound) {
+		this(Filter.allComponents(Position.class, Velocity.class), xBound);
 	}
 
-	protected MovementSystem(Filter filter) {
+	protected MovementSystem(Filter filter, float xBound) {
 		super(filter);
+
+		this.xBound = xBound;
 	}
 
 	@Override
@@ -32,6 +36,10 @@ public class MovementSystem extends EntityProcessingSystem {
 		positionMapper = world.getMapper(Position.class);
 		velocityMapper = world.getMapper(Velocity.class);
 		stateMapper = world.getMapper(PlayerState.class);
+	}
+
+	public void doNextLevel(float xBound) {
+		this.xBound = xBound;
 	}
 
 	@Override
@@ -55,6 +63,10 @@ public class MovementSystem extends EntityProcessingSystem {
 		if (p.position.y < 0.0f) {
 			p.position.y = 0.0f;
 			v.velocity.y = 0.0f;
+		}
+
+		if (p.position.x > xBound) {
+			p.position.x = 0.0f;
 		}
 
 		if (ps != null) {

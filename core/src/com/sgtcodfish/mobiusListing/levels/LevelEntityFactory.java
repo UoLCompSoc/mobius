@@ -54,12 +54,23 @@ import com.sgtcodfish.mobiusListing.components.TiledRenderable;
  */
 public class LevelEntityFactory implements Disposable {
 	public static final String					DEFAULT_LEVEL_FOLDER	= "levels/";
-	public static final String[]				MAP_NAMES				= { "level1.tmx", "level2.tmx", "level3.tmx",
-			"level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx", "level10.tmx",
-			"level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level15.tmx", "level16.tmx", "level17.tmx",
-			"level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx",
-			"level25.tmx", "level26.tmx", "level27.tmx", "level28.tmx", "level29.tmx", "level30.tmx", "level31.tmx",
-			"level32.tmx"												};
+	// note: some borked for release
+	// public static final String[] MAP_NAMES = { "level0.tmx", "level1.tmx",
+	// "level2.tmx",
+	// "level3.tmx",
+	// "level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx",
+	// "level9.tmx", "level10.tmx",
+	// "level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx",
+	// "level15.tmx", "level16.tmx", "level17.tmx", "level18.tmx",
+	// "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx",
+	// "level23.tmx", "level24.tmx", "level25.tmx",
+	// "level26.tmx", "level27.tmx", "level28.tmx", "level29.tmx",
+	// "level30.tmx", "level31.tmx", "level32.tmx" };
+
+	public static final String[]				MAP_NAMES				= { "level0.tmx", "level1.tmx", "level2.tmx",
+			"level3.tmx", "level4.tmx", "level5.tmx", "level7.tmx", "level11.tmx", "level13.tmx", "level14.tmx",
+			"level16.tmx", "level17.tmx", "level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx",
+			"level24.tmx", "level25.tmx", "level26.tmx", "level27.tmx", "level29.tmx", "level30.tmx", "level31.tmx" };
 
 	public static final String[]				VITAL_LAYERS			= { "floor", "key", "exit", "playerspawn" };
 
@@ -242,18 +253,25 @@ public class LevelEntityFactory implements Disposable {
 		Entity level = generateLevelEntity(map, 0.0f, 0.0f);
 		Entity mirrorLevel = generateLevelEntity(invertedMap, mapWidth, 0.0f);
 
-		positionLinkAndCommitToGroup(level, mirrorLevel, mapWidth, yFlip, groupName);
+		Linked levelLink = world.createComponent(Linked.class);
+		levelLink.linkedEntity = mirrorLevel;
+		levelLink.performer = new Linked.PassLink();
+		level.addComponent(levelLink);
+
+		world.getManager(MobiusGroupManager.class).add(level, groupName);
+		world.getManager(MobiusGroupManager.class).add(mirrorLevel, groupName + MIRROR_GROUP_EXTENSION);
 
 		Gdx.app.debug("LOAD_LEVELS", "Generated regular and mirror level entities for " + handle.name()
 				+ " - id reg = " + level.id + ", mirror = " + mirrorLevel.id);
 
 		for (int i = 0; i < map.getLayers().getCount(); i++) {
 			TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
+			TiledMapTileLayer mirrorLayer = (TiledMapTileLayer) invertedMap.getLayers().get(i);
 
 			if (isInteractableLayer(layer)) {
 				Gdx.app.debug("LOAD_LEVELS", "Loading interactible layer: " + layer.getName());
 				Entity platformEntity = generateInteractablePlatformEntity(layer, false, 0.0f, 0.0f);
-				Entity mirroredPlatformEntity = generateInteractablePlatformEntity(layer, true, mapWidth, 0.0f);
+				Entity mirroredPlatformEntity = generateInteractablePlatformEntity(mirrorLayer, true, mapWidth, 0.0f);
 
 				positionLinkAndCommitToGroup(platformEntity, mirroredPlatformEntity, mapWidth, yFlip, groupName);
 
@@ -264,13 +282,13 @@ public class LevelEntityFactory implements Disposable {
 				String mirrorKeyName = keyName + MIRROR_GROUP_EXTENSION;
 
 				Entity keyEntity = generateKeyEntity(layer, keyName, false, 0.0f, 0.0f);
-				Entity mirroredKeyEntity = generateKeyEntity(layer, mirrorKeyName, true, mapWidth, 0.0f);
+				Entity mirroredKeyEntity = generateKeyEntity(mirrorLayer, mirrorKeyName, true, mapWidth, 0.0f);
 				positionLinkAndCommitToGroup(keyEntity, mirroredKeyEntity, mapWidth, yFlip, groupName);
 
 			} else if (isExitLayer(layer)) {
 				Gdx.app.debug("LOAD_LEVELS", "Loading exit layer.");
 				Entity exitEntity = generateExitEntity(layer, false, 0.0f, 0.0f);
-				Entity mirroredExitEntity = generateExitEntity(layer, true, mapWidth, 0.0f);
+				Entity mirroredExitEntity = generateExitEntity(mirrorLayer, true, mapWidth, 0.0f);
 				positionLinkAndCommitToGroup(exitEntity, mirroredExitEntity, mapWidth, yFlip, groupName);
 
 			} else if (isSpawnLayer(layer)) {
@@ -286,7 +304,7 @@ public class LevelEntityFactory implements Disposable {
 
 			if (isSolidLayer(layer)) {
 				if (collisionMaps.get(groupName) == null) {
-					collisionMaps.put(groupName, generateCollisionMap(layer));
+					collisionMaps.put(groupName, generateCollisionMap(layer, mirrorLayer));
 				} else {
 					throw new GdxRuntimeException("Modifying collision maps NYI");
 				}
@@ -333,13 +351,18 @@ public class LevelEntityFactory implements Disposable {
 		MapProperties properties = layer.getProperties();
 
 		Rectangle platformRect = calculatePlatformRect(layer);
+		if (platformRect == null) {
+			Gdx.app.debug("LOAD_LEVEL", "Couldn't create platform rect for layer " + layer);
+			return null;
+		}
+
 		Texture texture = null;
 
 		int platSize = 0;
 
 		PlatformSpriteOrientation orientation = PlatformSpriteOrientation.NONE;
 
-		if (platformRect.height == 1.0f) {
+		if (platformRect.height == 1.0f) { // if height is 1 tile
 			texture = generateHorizontalPlatformTexture((int) platformRect.width);
 			platSize = (int) platformRect.width;
 			orientation = PlatformSpriteOrientation.HORIZONTAL;
@@ -391,6 +414,11 @@ public class LevelEntityFactory implements Disposable {
 			e.addComponent(opacity);
 			e.addComponent(fadableLayer);
 		}
+
+		Solid solid = world.createComponent(Solid.class);
+		solid.boundingBox = platformSprite.rectangle;
+		solid.invertedGravity = false;
+		solid.weight = 100.0f;
 
 		e.addToWorld();
 		e.disable();
@@ -455,6 +483,12 @@ public class LevelEntityFactory implements Disposable {
 			s.spriteHeight = s.textureRegion.getRegionHeight();
 			s.mirrored = mirrored;
 			e.addComponent(s);
+
+			Solid solid = world.createComponent(Solid.class);
+			solid.boundingBox = new Rectangle(p.position.x, p.position.y, s.spriteWidth, s.spriteHeight);
+			solid.invertedGravity = false;
+			solid.weight = 0.25f;
+			e.addComponent(solid);
 
 			e.addToWorld();
 			e.disable();
@@ -652,16 +686,22 @@ public class LevelEntityFactory implements Disposable {
 	 * 
 	 * @param layer
 	 *        The layer to use to generate the map.
+	 * @param The
+	 *        mirror layer corresponding to the layer.
 	 * @return A boolean array where map[layer.getWidth() * y + x] is a cell,
 	 *         and true means "solid".
 	 */
-	protected TerrainCollisionMap generateCollisionMap(TiledMapTileLayer layer) {
+	protected TerrainCollisionMap generateCollisionMap(TiledMapTileLayer layer, TiledMapTileLayer mirrorLayer) {
 		Array<Boolean> collisionMap = new Array<Boolean>();
-		collisionMap.ensureCapacity(layer.getWidth() * layer.getHeight());
+		collisionMap.ensureCapacity((layer.getWidth() + mirrorLayer.getWidth()) * layer.getHeight());
 
 		for (int y = 0; y < layer.getHeight(); y++) {
-			for (int x = 0; x < layer.getWidth(); x++) {
-				collisionMap.add((layer.getCell(x, y) != null));
+			for (int x = 0; x < (layer.getWidth() + mirrorLayer.getWidth()); x++) {
+				if (x < layer.getWidth()) {
+					collisionMap.add((layer.getCell(x, y) != null));
+				} else {
+					collisionMap.add((mirrorLayer.getCell(x - layer.getWidth(), y) != null));
+				}
 			}
 		}
 

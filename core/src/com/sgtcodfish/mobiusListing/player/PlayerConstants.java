@@ -10,4 +10,7 @@ package com.sgtcodfish.mobiusListing.player;
 public class PlayerConstants {
 	public static final float	RUN_VELOCITY	= 10.0f;
 	public static final float	JUMP_VELOCITY	= 17.5f;
+
+	// TODO: fix dirty hack
+	public static boolean		interacting		= false;
 }

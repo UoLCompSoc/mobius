@@ -52,7 +52,7 @@ public class TiledRenderingSystem extends EntityProcessingSystem {
 		tr.renderer.setView((OrthographicCamera) camera);
 		tr.renderer.render(tr.layerArray);
 
-		camera.translate(p.position.x, p.position.y, 0.0f);
+		camera.translate(p.position.x, -p.position.y, 0.0f);
 		camera.update();
 	}
 

@@ -26,12 +26,12 @@
  </layer>
  <layer name="playerspawn" width="32" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2AUwIAUEEvT2U5GOts3CkbBKBgFgwEAAC1PADc=
+   eJxjYBgFo2AUDCRgHGgHjIJRMApGwQAAAA18AAI=
   </data>
  </layer>
  <layer name="levelnumber" width="32" height="17">
   <data encoding="base64" compression="zlib">
-   eJxjYBgFo2BkAykkPApGwSgYBaOAPgAAsx8ATw==
+   eJxjYBgFo2BkAyk0LD2wzhkFo2AUjIIRAQDS8gCE
   </data>
  </layer>
 </map>
