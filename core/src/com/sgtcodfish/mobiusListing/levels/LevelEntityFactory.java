@@ -205,9 +205,9 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		TmxMapLoader loader = new TmxMapLoader();
-		levels = new ArrayList<>(nameList.length);
-		levelSpawns = new HashMap<>(nameList.length);
-		collisionMaps = new HashMap<>(nameList.length);
+		levels = new ArrayList<String>(nameList.length);
+		levelSpawns = new HashMap<String, Vector2>(nameList.length);
+		collisionMaps = new HashMap<String, TerrainCollisionMap>(nameList.length);
 
 		for (String s : nameList) {
 			if (prefix != null) {
@@ -860,7 +860,7 @@ public class LevelEntityFactory implements Disposable {
 	public static boolean isValidLevel(TiledMap map, String mapName) {
 		boolean retVal = true;
 
-		HashMap<String, Boolean> found = new HashMap<>();
+		HashMap<String, Boolean> found = new HashMap<String, Boolean>();
 		for (String s : VITAL_LAYERS) {
 			found.put(s, false);
 		}

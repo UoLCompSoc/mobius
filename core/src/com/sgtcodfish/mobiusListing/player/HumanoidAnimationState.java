@@ -18,7 +18,8 @@ public enum HumanoidAnimationState {
 	public static HashMap<HumanoidAnimationState, Animation> makeAnimationMapFromAnimations(Animation standing,
 			Animation running, Animation jumping, Animation using, Animation manipulating) {
 		final int numStates = HumanoidAnimationState.values().length;
-		HashMap<HumanoidAnimationState, Animation> animationMap = new HashMap<>(numStates);
+		HashMap<HumanoidAnimationState, Animation> animationMap = new HashMap<HumanoidAnimationState, Animation>(
+				numStates);
 
 		if (standing == null || running == null || jumping == null || using == null || manipulating == null) {
 			throw new IllegalArgumentException("Null animation passed to makeAnimationMap");

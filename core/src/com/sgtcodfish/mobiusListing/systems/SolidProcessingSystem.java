@@ -73,10 +73,10 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 		opacityMapper = world.getMapper(Opacity.class);
 
 		// TODO: Remove magic number
-		movingSolids = new ArrayList<>(100);
-		staticSolids = new ArrayList<>(100);
+		movingSolids = new ArrayList<Entity>(100);
+		staticSolids = new ArrayList<Entity>(100);
 
-		scheduledForRemoval = new HashMap<>(100);
+		scheduledForRemoval = new HashMap<Entity, Boolean>(100);
 	}
 
 	@Override

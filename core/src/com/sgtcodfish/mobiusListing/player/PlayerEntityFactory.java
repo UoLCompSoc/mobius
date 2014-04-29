@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.sgtcodfish.mobiusListing.Item;
 import com.sgtcodfish.mobiusListing.components.FocusTaker;
 import com.sgtcodfish.mobiusListing.components.Inventory;
 import com.sgtcodfish.mobiusListing.components.PlayerInputListener;
@@ -134,7 +135,7 @@ public class PlayerEntityFactory implements Disposable {
 		e.addComponent(s);
 
 		Inventory i = world.createComponent(Inventory.class);
-		i.inventoryList = new ArrayList<>();
+		i.inventoryList = new ArrayList<Item>();
 		e.addComponent(i);
 
 		if (takesFocus) {

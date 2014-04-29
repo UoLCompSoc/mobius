@@ -9,11 +9,10 @@ import com.sgtcodfish.mobiusListing.Item;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class Inventory implements Component {
-	public ArrayList<Item>	inventoryList	= new ArrayList<>();
+	public ArrayList<Item>	inventoryList	= new ArrayList<Item>();
 
 	@Override
 	public void reset() {
-		inventoryList = new ArrayList<>();
+		inventoryList = new ArrayList<Item>();
 	}
-
 }
