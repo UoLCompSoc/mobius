@@ -22,22 +22,22 @@ import com.sgtcodfish.mobiusListing.player.PlayerConstants;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class SolidProcessingSystem extends EntityProcessingSystem {
-	private ComponentMapper<Position>		positionMapper			= null;
-	private ComponentMapper<Velocity>		velocityMapper			= null;
+	private ComponentMapper<Position>		positionMapper		= null;
+	private ComponentMapper<Velocity>		velocityMapper		= null;
 
-	private ComponentMapper<Solid>			solidMapper				= null;
+	private ComponentMapper<Solid>			solidMapper			= null;
 
-	private ComponentMapper<Inventory>		inventoryMapper			= null;
-	private ComponentMapper<Collectable>	collectableMapper		= null;
+	private ComponentMapper<Inventory>		inventoryMapper		= null;
+	private ComponentMapper<Collectable>	collectableMapper	= null;
 
-	private ComponentMapper<Interactable>	interactableMapper		= null;
+	private ComponentMapper<Interactable>	interactableMapper	= null;
 
-	private ComponentMapper<Opacity>		opacityMapper			= null;
+	private ComponentMapper<Opacity>		opacityMapper		= null;
 
-	private ArrayList<Entity>				movingSolids			= null;
-	private ArrayList<Entity>				staticSolids			= null;
+	private ArrayList<Entity>				movingSolids		= null;
+	private ArrayList<Entity>				staticSolids		= null;
 
-	private HashMap<Entity, Boolean>		scheduledForRemoval		= null;
+	private HashMap<Entity, Boolean>		scheduledForRemoval	= null;
 
 	/* *************************************************************************
 	 * WARNING: THE BOOLEAN IN THIS HASHMAP DOES NOTHING -ONLY THE PRESENCE OF A
@@ -45,7 +45,7 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 	 * *************************************************************************
 	 */
 
-	private TerrainCollisionSystem			terrainCollisionSystem	= null;
+	// private TerrainCollisionSystem terrainCollisionSystem = null;
 
 	@SuppressWarnings("unchecked")
 	public SolidProcessingSystem(TerrainCollisionSystem terrainCollisionSystem) {
@@ -55,7 +55,7 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 	protected SolidProcessingSystem(Filter filter, TerrainCollisionSystem terrainCollisionSystem) {
 		super(filter);
 
-		this.terrainCollisionSystem = terrainCollisionSystem;
+		// this.terrainCollisionSystem = terrainCollisionSystem;
 	}
 
 	@Override

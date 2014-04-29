@@ -4,7 +4,7 @@
   <image source="../tilesets/tileset.png" width="160" height="160"/>
  </tileset>
  <tileset firstgid="26" name="numbers" tilewidth="32" tileheight="32">
-  <image source="../fontsets/numbers.PNG" width="320" height="32"/>
+  <image source="../fontsets/numbers.png" width="320" height="32"/>
  </tileset>
  <layer name="floor" width="64" height="17">
   <properties>
