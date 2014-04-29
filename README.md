@@ -19,6 +19,7 @@ Controls
 
 - Left click on red objects to interact with them
 
+- F10 - Skip level
 
 
 LD29 - Theme "Beneath the Surface"
