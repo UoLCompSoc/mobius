@@ -11,6 +11,7 @@ public class DesktopLauncher {
 		config.width = 1024;
 		config.height = 768;
 		config.resizable = false;
+		config.title = "Möbius";
 		config.addIcon("icons/icon128.png", FileType.Internal);
 		config.addIcon("icons/icon32.png", FileType.Internal);
 		config.addIcon("icons/icon16.png", FileType.Internal);
