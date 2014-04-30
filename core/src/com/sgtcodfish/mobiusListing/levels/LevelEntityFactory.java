@@ -30,6 +30,7 @@ import com.sgtcodfish.mobiusListing.Item.ItemType;
 import com.sgtcodfish.mobiusListing.MobiusGroupManager;
 import com.sgtcodfish.mobiusListing.TerrainCollisionMap;
 import com.sgtcodfish.mobiusListing.WorldConstants;
+import com.sgtcodfish.mobiusListing.components.ChildLinked;
 import com.sgtcodfish.mobiusListing.components.Collectable;
 import com.sgtcodfish.mobiusListing.components.DxLayer;
 import com.sgtcodfish.mobiusListing.components.DyLayer;
@@ -258,6 +259,8 @@ public class LevelEntityFactory implements Disposable {
 		levelLink.performer = new Linked.PassLink();
 		level.addComponent(levelLink);
 
+		ChildLinked.makeChild(world, level, mirrorLevel);
+
 		world.getManager(MobiusGroupManager.class).add(level, groupName);
 		world.getManager(MobiusGroupManager.class).add(mirrorLevel, groupName + MIRROR_GROUP_EXTENSION);
 
@@ -322,6 +325,7 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		Linked.makePositionOpacityLink(world, parent, child, xOffset, yFlip);
+		ChildLinked.makeChild(world, parent, child);
 
 		world.getManager(MobiusGroupManager.class).add(parent, groupName);
 		world.getManager(MobiusGroupManager.class).add(child, groupName + MIRROR_GROUP_EXTENSION);

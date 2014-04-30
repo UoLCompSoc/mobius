@@ -9,6 +9,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
+import com.sgtcodfish.mobiusListing.components.ChildLinked;
 import com.sgtcodfish.mobiusListing.components.DxLayer;
 import com.sgtcodfish.mobiusListing.components.DyLayer;
 import com.sgtcodfish.mobiusListing.components.FadableLayer;
@@ -31,6 +32,8 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 	private ComponentMapper<FadableLayer>	fadableLayerMapper		= null;
 
 	private ComponentMapper<Opacity>		opacityMapper			= null;
+
+	private ComponentMapper<ChildLinked>	childLinkedMapper		= null;
 
 	private static final float				CLICK_WAIT_TIME			= 0.25f;
 	private float							timeSinceLastClick		= CLICK_WAIT_TIME;
@@ -60,6 +63,7 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 		dyLayerMapper = world.getMapper(DyLayer.class);
 		fadableLayerMapper = world.getMapper(FadableLayer.class);
 		opacityMapper = world.getMapper(Opacity.class);
+		childLinkedMapper = world.getMapper(ChildLinked.class);
 	}
 
 	@Override
@@ -67,11 +71,17 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 		Position p = positionMapper.get(e);
 		PlatformSprite platformSprite = platformSpriteMapper.get(e);
 
+		boolean isChild = childLinkedMapper.get(e) != null;
+
 		timeSinceLastClick += world.getDelta();
 
 		if (timeSinceLastClick > CLICK_WAIT_TIME) {
 			platformSprite.rectangle.x = p.position.x;
 			platformSprite.rectangle.y = p.position.y;
+
+			if (isChild) {
+				platformSprite.rectangle.y -= platformSprite.spriteHeight;
+			}
 
 			if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
 				clickFlag = true;
@@ -80,18 +90,21 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 				mouse = camera.unproject(mouse, 0.0f, 0.0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 				if (platformSprite.rectangle.contains((float) mouse.x, (float) mouse.y)) {
-					DxLayer dxLayer = dxLayerMapper.get(e);
-					MovingLayer movingLayer = (dxLayer != null ? dxLayer : dyLayerMapper.get(e));
-					FadableLayer fadableLayer = fadableLayerMapper.get(e);
+					// if this entity is a child, move its parent.
+					Entity actualEntity = (isChild ? e : childLinkedMapper.get(e).parentEntity);
+
+					DxLayer dxLayer = dxLayerMapper.get(actualEntity);
+					MovingLayer movingLayer = (dxLayer != null ? dxLayer : dyLayerMapper.get(actualEntity));
+					FadableLayer fadableLayer = fadableLayerMapper.get(actualEntity);
 
 					if (movingLayer != null) {
 						Gdx.app.debug("PLATFORM_INPUT", "Handling input on a moving platform.");
-						movingLayer.interact(positionMapper.get(e), 1);
+						movingLayer.interact(positionMapper.get(actualEntity), 1);
 					}
 
 					if (fadableLayer != null) {
 						Gdx.app.debug("PLATFORM_INPUT", "Handling input on a fading platform.");
-						fadableLayer.interact(opacityMapper.get(e), 1);
+						fadableLayer.interact(opacityMapper.get(actualEntity), 1);
 					}
 				}
 			}
