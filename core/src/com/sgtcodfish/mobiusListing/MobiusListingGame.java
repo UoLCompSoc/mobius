@@ -219,7 +219,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 				components += c.getClass().getSimpleName();
 
 				if (c.getClass() == Linked.class) {
-					components += "->" + e.getComponent(Linked.class).linkedEntity.id;
+					components += "->" + e.getComponent(Linked.class).child.id;
 				}
 
 				components += delim;

@@ -54,23 +54,14 @@ import com.sgtcodfish.mobiusListing.components.TiledRenderable;
  */
 public class LevelEntityFactory implements Disposable {
 	public static final String					DEFAULT_LEVEL_FOLDER	= "levels/";
-	// note: some borked for release
-	// public static final String[] MAP_NAMES = { "level0.tmx", "level1.tmx",
-	// "level2.tmx",
-	// "level3.tmx",
-	// "level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx",
-	// "level9.tmx", "level10.tmx",
-	// "level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx",
-	// "level15.tmx", "level16.tmx", "level17.tmx", "level18.tmx",
-	// "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx",
-	// "level23.tmx", "level24.tmx", "level25.tmx",
-	// "level26.tmx", "level27.tmx", "level28.tmx", "level29.tmx",
-	// "level30.tmx", "level31.tmx", "level32.tmx" };
 
+	// note: level15 is removed.
 	public static final String[]				MAP_NAMES				= { "level0.tmx", "level1.tmx", "level2.tmx",
-			"level3.tmx", "level4.tmx", "level5.tmx", "level7.tmx", "level11.tmx", "level13.tmx", "level14.tmx",
-			"level16.tmx", "level17.tmx", "level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx",
-			"level24.tmx", "level25.tmx", "level26.tmx", "level27.tmx", "level29.tmx", "level30.tmx", "level31.tmx" };
+			"level3.tmx", "level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx",
+			"level10.tmx", "level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level16.tmx", "level17.tmx",
+			"level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx",
+			"level25.tmx", "level26.tmx", "level27.tmx", "level28.tmx", "level29.tmx", "level30.tmx", "level31.tmx",
+			"level32.tmx"												};
 
 	public static final String[]				VITAL_LAYERS			= { "floor", "key", "exit", "playerspawn" };
 
@@ -95,7 +86,16 @@ public class LevelEntityFactory implements Disposable {
 	public LevelEntityFactory(World world, Batch batch, String folderName) {
 		this.world = world;
 		this.batch = batch;
-		loadLevelsFromList(folderName, MAP_NAMES);
+
+		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
+			String[] MAP_NAMES_DEBUG = new String[MAP_NAMES.length + 1];
+			MAP_NAMES_DEBUG[0] = new String("debug.tmx");
+			System.arraycopy(MAP_NAMES, 0, MAP_NAMES_DEBUG, 1, MAP_NAMES.length);
+
+			loadLevelsFromList(folderName, MAP_NAMES_DEBUG);
+		} else {
+			loadLevelsFromList(folderName, MAP_NAMES);
+		}
 	}
 
 	/**
@@ -254,7 +254,7 @@ public class LevelEntityFactory implements Disposable {
 		Entity mirrorLevel = generateLevelEntity(invertedMap, mapWidth, 0.0f);
 
 		Linked levelLink = world.createComponent(Linked.class);
-		levelLink.linkedEntity = mirrorLevel;
+		levelLink.child = mirrorLevel;
 		levelLink.performer = new Linked.PassLink();
 		level.addComponent(levelLink);
 
@@ -317,7 +317,11 @@ public class LevelEntityFactory implements Disposable {
 
 	protected void positionLinkAndCommitToGroup(Entity parent, Entity child, float xOffset, float yFlip,
 			String groupName) {
-		Linked.makePositionLink(world, parent, child, yFlip);
+		if (parent == null || child == null) {
+			throw new IllegalArgumentException("Null parent or child passed to posLink+Commit, name = " + groupName);
+		}
+
+		Linked.makePositionOpacityLink(world, parent, child, xOffset, yFlip);
 
 		world.getManager(MobiusGroupManager.class).add(parent, groupName);
 		world.getManager(MobiusGroupManager.class).add(child, groupName + MIRROR_GROUP_EXTENSION);

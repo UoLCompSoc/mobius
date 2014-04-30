@@ -79,10 +79,7 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 				mouse.set(Gdx.input.getX(), Gdx.input.getY(), 0.0f);
 				mouse = camera.unproject(mouse, 0.0f, 0.0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-				Gdx.app.debug("PLATFORM_INPUT", "Left click at (x, y) = (" + mouse.x + ", " + mouse.y + ").");
-
 				if (platformSprite.rectangle.contains((float) mouse.x, (float) mouse.y)) {
-					Gdx.app.debug("PLATFORM_INPUT", "A rectangle contained this click!");
 					DxLayer dxLayer = dxLayerMapper.get(e);
 					MovingLayer movingLayer = (dxLayer != null ? dxLayer : dyLayerMapper.get(e));
 					FadableLayer fadableLayer = fadableLayerMapper.get(e);
@@ -100,9 +97,9 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 			}
 
 			if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
-				clickFlag = true;
-
 				if (Gdx.input.isButtonPressed(Buttons.RIGHT)) {
+					clickFlag = true;
+
 					Gdx.app.debug("PLATFORM_INPUT", "Detected platform rectangle:\nx: " + platformSprite.rectangle.x
 							+ "\ny: " + platformSprite.rectangle.y + "\nw: " + platformSprite.rectangle.width + "\nh: "
 							+ platformSprite.rectangle.height);

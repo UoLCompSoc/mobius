@@ -30,7 +30,7 @@ public class MobiusGroupManager extends GroupManager {
 		Linked link = linkedComponentMapper.get(e);
 
 		if (link != null) {
-			link.linkedEntity.deleteFromWorld();
+			link.child.deleteFromWorld();
 		}
 
 		super.deleted(e);
