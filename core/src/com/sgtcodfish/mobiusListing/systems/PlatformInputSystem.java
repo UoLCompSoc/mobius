@@ -91,7 +91,7 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 
 				if (platformSprite.rectangle.contains((float) mouse.x, (float) mouse.y)) {
 					// if this entity is a child, move its parent.
-					Entity actualEntity = (isChild ? e : childLinkedMapper.get(e).parentEntity);
+					Entity actualEntity = (isChild ? childLinkedMapper.get(e).parentEntity : e);
 
 					DxLayer dxLayer = dxLayerMapper.get(actualEntity);
 					MovingLayer movingLayer = (dxLayer != null ? dxLayer : dyLayerMapper.get(actualEntity));
