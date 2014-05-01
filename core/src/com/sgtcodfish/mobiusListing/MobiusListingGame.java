@@ -119,8 +119,9 @@ public class MobiusListingGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		// TODO: Fix dirty hack
+		// TODO: Fix dirty hack with global state in this line.
 		PlayerConstants.interacting = Gdx.input.isKeyPressed(Keys.W);
+
 		world.process();
 		timeSinceLastDebug += deltaTime;
 		if (timeSinceLastDebug > DEBUG_COOLDOWN) {

@@ -1,9 +1,7 @@
 package com.sgtcodfish.mobiusListing;
 
-import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.managers.GroupManager;
-import com.sgtcodfish.mobiusListing.components.Linked;
 
 /**
  * <p>
@@ -14,7 +12,7 @@ import com.sgtcodfish.mobiusListing.components.Linked;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class MobiusGroupManager extends GroupManager {
-	private ComponentMapper<Linked>	linkedComponentMapper	= null;
+	// private ComponentMapper<Linked> linkedComponentMapper = null;
 
 	public MobiusGroupManager() {
 		super();
@@ -22,17 +20,11 @@ public class MobiusGroupManager extends GroupManager {
 
 	@Override
 	public void initialize() {
-		linkedComponentMapper = world.getMapper(Linked.class);
+		// linkedComponentMapper = world.getMapper(Linked.class);
 	}
 
 	@Override
 	public void deleted(Entity e) {
-		Linked link = linkedComponentMapper.get(e);
-
-		if (link != null) {
-			link.child.deleteFromWorld();
-		}
-
 		super.deleted(e);
 	}
 

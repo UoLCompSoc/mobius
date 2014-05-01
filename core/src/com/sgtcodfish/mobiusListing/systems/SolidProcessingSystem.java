@@ -12,6 +12,7 @@ import com.sgtcodfish.mobiusListing.WorldConstants;
 import com.sgtcodfish.mobiusListing.components.Collectable;
 import com.sgtcodfish.mobiusListing.components.Interactable;
 import com.sgtcodfish.mobiusListing.components.Inventory;
+import com.sgtcodfish.mobiusListing.components.Linked;
 import com.sgtcodfish.mobiusListing.components.Opacity;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.Solid;
@@ -143,7 +144,10 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 		}
 
 		for (Entity e : scheduledForRemoval.keySet()) {
-			e.deleteFromWorld();
+			if (world.getMapper(Linked.class).get(e) != null) {
+				world.getMapper(Linked.class).get(e).child.deleteFromWorld();
+				e.deleteFromWorld();
+			}
 		}
 
 		scheduledForRemoval.clear();
