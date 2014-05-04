@@ -3,6 +3,7 @@ package com.sgtcodfish.mobiusListing;
 import com.artemis.Component;
 import com.artemis.Entity;
 import com.artemis.World;
+import com.artemis.managers.GroupManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -46,8 +47,9 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 	public World					world					= null;
 
-	public MovementSystem			movementSystem			= null;
-	public TerrainCollisionSystem	terrainCollisionSystem	= null;
+	private MovementSystem			movementSystem			= null;
+	private TerrainCollisionSystem	terrainCollisionSystem	= null;
+	private LinkingSystem			linkingSystem			= null;
 
 	public PlayerEntityFactory		playerEntityFactory		= null;
 	private Entity					playerEntity			= null;
@@ -81,16 +83,17 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 		movementSystem = new MovementSystem(0.0f);
 		terrainCollisionSystem = new TerrainCollisionSystem(null);
+		linkingSystem = new LinkingSystem();
 
 		world.setSystem(new PlayerInputSystem(this));
 		world.setSystem(new PlatformInputSystem(camera));
 
-		world.setSystem(new SolidProcessingSystem(terrainCollisionSystem));
+		world.setSystem(new SolidProcessingSystem(linkingSystem));
 		world.setSystem(terrainCollisionSystem);
 
 		world.setSystem(movementSystem);
 
-		world.setSystem(new LinkingSystem());
+		world.setSystem(linkingSystem);
 
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));
@@ -98,7 +101,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 		world.setSystem(new LevelAdvanceSystem(this), true);
 
-		world.setManager(new MobiusGroupManager());
+		world.setManager(new GroupManager());
 
 		world.initialize();
 
@@ -155,6 +158,11 @@ public class MobiusListingGame extends ApplicationAdapter {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void resize(int width, int height) {
+		camera = new OrthographicCamera(width, height);
 	}
 
 	public void nextLevel() {

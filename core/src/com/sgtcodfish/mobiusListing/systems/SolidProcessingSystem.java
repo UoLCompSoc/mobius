@@ -1,7 +1,6 @@
 package com.sgtcodfish.mobiusListing.systems;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
@@ -12,7 +11,6 @@ import com.sgtcodfish.mobiusListing.WorldConstants;
 import com.sgtcodfish.mobiusListing.components.Collectable;
 import com.sgtcodfish.mobiusListing.components.Interactable;
 import com.sgtcodfish.mobiusListing.components.Inventory;
-import com.sgtcodfish.mobiusListing.components.Linked;
 import com.sgtcodfish.mobiusListing.components.Opacity;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.Solid;
@@ -38,25 +36,16 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 	private ArrayList<Entity>				movingSolids		= null;
 	private ArrayList<Entity>				staticSolids		= null;
 
-	private HashMap<Entity, Boolean>		scheduledForRemoval	= null;
-
-	/* *************************************************************************
-	 * WARNING: THE BOOLEAN IN THIS HASHMAP DOES NOTHING -ONLY THE PRESENCE OF A
-	 * KEY MEANS ANYTHING, DON'T ASK ME WHY
-	 * *************************************************************************
-	 */
-
-	// private TerrainCollisionSystem terrainCollisionSystem = null;
+	private LinkingSystem					linkingSystem		= null;
 
 	@SuppressWarnings("unchecked")
-	public SolidProcessingSystem(TerrainCollisionSystem terrainCollisionSystem) {
-		this(Filter.allComponents(Position.class, Solid.class), terrainCollisionSystem);
+	public SolidProcessingSystem(LinkingSystem linkingSystem) {
+		this(Filter.allComponents(Position.class, Solid.class), linkingSystem);
 	}
 
-	protected SolidProcessingSystem(Filter filter, TerrainCollisionSystem terrainCollisionSystem) {
+	protected SolidProcessingSystem(Filter filter, LinkingSystem linkingSystem) {
 		super(filter);
-
-		// this.terrainCollisionSystem = terrainCollisionSystem;
+		this.linkingSystem = linkingSystem;
 	}
 
 	@Override
@@ -73,11 +62,8 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 
 		opacityMapper = world.getMapper(Opacity.class);
 
-		// TODO: Remove magic number
-		movingSolids = new ArrayList<Entity>(100);
-		staticSolids = new ArrayList<Entity>(100);
-
-		scheduledForRemoval = new HashMap<Entity, Boolean>(100);
+		movingSolids = new ArrayList<Entity>(world.getEntityManager().getActiveEntityCount());
+		staticSolids = new ArrayList<Entity>(world.getEntityManager().getActiveEntityCount());
 	}
 
 	@Override
@@ -119,10 +105,6 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 			for (int j = i + 1; j < movingSolids.size(); j++) {
 				Entity otherEntity = movingSolids.get(j);
 
-				if (scheduledForRemoval.get(otherEntity) != null) {
-					continue;
-				}
-
 				Solid other = solidMapper.get(otherEntity);
 
 				if (s.boundingBox.overlaps(other.boundingBox)) {
@@ -131,10 +113,6 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 			}
 
 			for (Entity staticSolid : staticSolids) {
-				if (scheduledForRemoval.get(staticSolid) != null) {
-					continue;
-				}
-
 				Solid other = solidMapper.get(staticSolid);
 
 				if (s.boundingBox.overlaps(other.boundingBox)) {
@@ -142,19 +120,9 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 				}
 			}
 		}
-
-		for (Entity e : scheduledForRemoval.keySet()) {
-			if (world.getMapper(Linked.class).get(e) != null) {
-				world.getMapper(Linked.class).get(e).child.deleteFromWorld();
-				e.deleteFromWorld();
-			}
-		}
-
-		scheduledForRemoval.clear();
 	}
 
 	protected void handleCollision(Entity one, Entity other) {
-		Gdx.app.debug("COLLISION", one.id + " col " + other.id);
 		if (inventoryMapper.get(one) != null && collectableMapper.get(other) != null) {
 			collect(one, other);
 			return;
@@ -163,12 +131,12 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 			return;
 		} else if (solidMapper.get(other).weight < solidMapper.get(one).weight && interactableMapper.get(other) != null
 				&& PlayerConstants.interacting) {
-			// TODO: Fix dirty hack
+			// TODO: Fix dirty hack with weights
 			if (inventoryMapper.get(one) != null && inventoryMapper.get(one).inventoryList.size() > 0) {
 				world.getSystem(LevelAdvanceSystem.class).setPassive(false);
 			}
 		} else if ((solidMapper.get(one).weight < solidMapper.get(other).weight && interactableMapper.get(one) != null && PlayerConstants.interacting)) {
-			// TODO: Fix dirty hack
+			// TODO: Fix dirty hack with weights
 			if (inventoryMapper.get(other) != null && inventoryMapper.get(other).inventoryList.size() > 0) {
 				world.getSystem(LevelAdvanceSystem.class).setPassive(false);
 			}
@@ -182,6 +150,6 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 		inventory.inventoryList.add(collectable.item);
 		Gdx.app.debug("PICKUP", collectable.item.name + " was picked up!");
 
-		scheduledForRemoval.put(item, true);
+		linkingSystem.scheduleForRemoval(item);
 	}
 }

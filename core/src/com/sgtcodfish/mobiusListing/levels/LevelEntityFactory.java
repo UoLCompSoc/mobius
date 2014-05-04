@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.artemis.managers.GroupManager;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -27,7 +28,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.sgtcodfish.mobiusListing.Item;
 import com.sgtcodfish.mobiusListing.Item.ItemType;
-import com.sgtcodfish.mobiusListing.MobiusGroupManager;
 import com.sgtcodfish.mobiusListing.TerrainCollisionMap;
 import com.sgtcodfish.mobiusListing.WorldConstants;
 import com.sgtcodfish.mobiusListing.components.ChildLinked;
@@ -115,8 +115,7 @@ public class LevelEntityFactory implements Disposable {
 		} else {
 			if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
 				Gdx.app.debug("NEXT_LEVEL", "Level's manager contains "
-						+ world.getManager(MobiusGroupManager.class).getEntities(levels.get(levelNumber)).size
-						+ " entities.");
+						+ world.getManager(GroupManager.class).getEntities(levels.get(levelNumber)).size + " entities.");
 			}
 
 			return true;
@@ -178,11 +177,11 @@ public class LevelEntityFactory implements Disposable {
 	}
 
 	protected Array<Entity> getCurrentLevelEntities() {
-		return world.getManager(MobiusGroupManager.class).getEntities(getCurrentLevelGroupName());
+		return world.getManager(GroupManager.class).getEntities(getCurrentLevelGroupName());
 	}
 
 	protected Array<Entity> getCurrentMirroredLevelEntities() {
-		return world.getManager(MobiusGroupManager.class).getEntities(getCurrentLevelMirrorGroupName());
+		return world.getManager(GroupManager.class).getEntities(getCurrentLevelMirrorGroupName());
 	}
 
 	/**
@@ -261,8 +260,8 @@ public class LevelEntityFactory implements Disposable {
 
 		ChildLinked.makeChild(world, level, mirrorLevel);
 
-		world.getManager(MobiusGroupManager.class).add(level, groupName);
-		world.getManager(MobiusGroupManager.class).add(mirrorLevel, groupName + MIRROR_GROUP_EXTENSION);
+		world.getManager(GroupManager.class).add(level, groupName);
+		world.getManager(GroupManager.class).add(mirrorLevel, groupName + MIRROR_GROUP_EXTENSION);
 
 		Gdx.app.debug("LOAD_LEVELS", "Generated regular and mirror level entities for " + handle.name()
 				+ " - id reg = " + level.id + ", mirror = " + mirrorLevel.id);
@@ -327,8 +326,8 @@ public class LevelEntityFactory implements Disposable {
 		Linked.makePositionOpacityLink(world, parent, child, xOffset, yFlip);
 		ChildLinked.makeChild(world, parent, child);
 
-		world.getManager(MobiusGroupManager.class).add(parent, groupName);
-		world.getManager(MobiusGroupManager.class).add(child, groupName + MIRROR_GROUP_EXTENSION);
+		world.getManager(GroupManager.class).add(parent, groupName);
+		world.getManager(GroupManager.class).add(child, groupName + MIRROR_GROUP_EXTENSION);
 	}
 
 	protected Entity generateLevelEntity(TiledMap map, float x, float y) {

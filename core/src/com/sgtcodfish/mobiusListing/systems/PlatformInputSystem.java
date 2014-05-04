@@ -98,12 +98,10 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 					FadableLayer fadableLayer = fadableLayerMapper.get(actualEntity);
 
 					if (movingLayer != null) {
-						Gdx.app.debug("PLATFORM_INPUT", "Handling input on a moving platform.");
 						movingLayer.interact(positionMapper.get(actualEntity), 1);
 					}
 
 					if (fadableLayer != null) {
-						Gdx.app.debug("PLATFORM_INPUT", "Handling input on a fading platform.");
 						fadableLayer.interact(opacityMapper.get(actualEntity), 1);
 					}
 				}
