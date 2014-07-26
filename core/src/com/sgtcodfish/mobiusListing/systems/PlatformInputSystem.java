@@ -35,12 +35,14 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 
 	private ComponentMapper<ChildLinked>	childLinkedMapper		= null;
 
-	private static final float				CLICK_WAIT_TIME			= 0.25f;
+	private static final float				CLICK_WAIT_TIME			= 0.5f;
 	private float							timeSinceLastClick		= CLICK_WAIT_TIME;
 	private boolean							clickFlag				= false;
 
 	private Camera							camera					= null;
 	private Vector3							mouse					= null;
+
+	private boolean							hasReleased				= false;
 
 	@SuppressWarnings("unchecked")
 	public PlatformInputSystem(Camera camera) {
@@ -68,14 +70,14 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 
 	@Override
 	protected void process(Entity e) {
-		Position p = positionMapper.get(e);
-		PlatformSprite platformSprite = platformSpriteMapper.get(e);
-
-		boolean isChild = childLinkedMapper.get(e) != null;
-
 		timeSinceLastClick += world.getDelta();
 
-		if (timeSinceLastClick > CLICK_WAIT_TIME) {
+		if (timeSinceLastClick > CLICK_WAIT_TIME && hasReleased) {
+			Position p = positionMapper.get(e);
+			PlatformSprite platformSprite = platformSpriteMapper.get(e);
+
+			boolean isChild = childLinkedMapper.get(e) != null;
+
 			platformSprite.rectangle.x = p.position.x;
 			platformSprite.rectangle.y = p.position.y;
 
@@ -109,13 +111,13 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 
 			if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
 				if (Gdx.input.isButtonPressed(Buttons.RIGHT)) {
-					clickFlag = true;
-
 					Gdx.app.debug("PLATFORM_INPUT", "Detected platform rectangle:\nx: " + platformSprite.rectangle.x
 							+ "\ny: " + platformSprite.rectangle.y + "\nw: " + platformSprite.rectangle.width + "\nh: "
 							+ platformSprite.rectangle.height);
 				}
 			}
+		} else if (!Gdx.input.isButtonPressed(Buttons.LEFT)) {
+			hasReleased = true;
 		}
 	}
 
@@ -124,6 +126,7 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 		if (clickFlag) {
 			timeSinceLastClick = 0.0f;
 			clickFlag = false;
+			hasReleased = false;
 		}
 	}
 }

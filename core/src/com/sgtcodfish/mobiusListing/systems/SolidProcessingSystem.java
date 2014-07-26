@@ -8,6 +8,7 @@ import com.artemis.Filter;
 import com.artemis.systems.EntityProcessingSystem;
 import com.badlogic.gdx.Gdx;
 import com.sgtcodfish.mobiusListing.WorldConstants;
+import com.sgtcodfish.mobiusListing.components.ChildLinked;
 import com.sgtcodfish.mobiusListing.components.Collectable;
 import com.sgtcodfish.mobiusListing.components.Interactable;
 import com.sgtcodfish.mobiusListing.components.Inventory;
@@ -32,6 +33,8 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 	private ComponentMapper<Interactable>	interactableMapper	= null;
 
 	private ComponentMapper<Opacity>		opacityMapper		= null;
+
+	private ComponentMapper<ChildLinked>	childLinkedMapper	= null;
 
 	private ArrayList<Entity>				movingSolids		= null;
 	private ArrayList<Entity>				staticSolids		= null;
@@ -62,6 +65,8 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 
 		opacityMapper = world.getMapper(Opacity.class);
 
+		childLinkedMapper = world.getMapper(ChildLinked.class);
+
 		movingSolids = new ArrayList<Entity>(world.getEntityManager().getActiveEntityCount());
 		staticSolids = new ArrayList<Entity>(world.getEntityManager().getActiveEntityCount());
 	}
@@ -77,8 +82,10 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 		Position position = positionMapper.get(e);
 		Solid solid = solidMapper.get(e);
 
+		boolean isChild = (childLinkedMapper.get(e) != null);
+
 		solid.boundingBox.x = position.position.x;
-		solid.boundingBox.y = position.position.y;
+		solid.boundingBox.y = position.position.y - (isChild ? solid.boundingBox.height : 0);
 
 		if (velocityMapper.get(e) != null) {
 			movingSolids.add(e);

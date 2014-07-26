@@ -56,6 +56,9 @@ import com.sgtcodfish.mobiusListing.components.TiledRenderable;
 public class LevelEntityFactory implements Disposable {
 	public static final String					DEFAULT_LEVEL_FOLDER	= "levels/";
 
+	// set to true to output detailed info about each level during loading
+	public static boolean						VERBOSE_LOAD			= false;
+
 	// note: level15 is removed.
 	public static final String[]				MAP_NAMES				= { "level0.tmx", "level1.tmx", "level2.tmx",
 			"level3.tmx", "level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx",
@@ -230,8 +233,10 @@ public class LevelEntityFactory implements Disposable {
 
 		String groupName = handle.name();
 
-		Gdx.app.debug("LOAD_LEVELS", "-----");
-		Gdx.app.debug("LOAD_LEVELS", "Loading " + handle.name() + ".");
+		if (VERBOSE_LOAD)
+			Gdx.app.debug("LOAD_LEVELS", "-----");
+		if (VERBOSE_LOAD)
+			Gdx.app.debug("LOAD_LEVELS", "Loading " + handle.name() + ".");
 
 		if (!isValidLevel(map, handle.name())) {
 			Gdx.app.debug("LOAD_LEVELS", handle.name() + " is an invalid level format. Skipping.");
@@ -245,10 +250,11 @@ public class LevelEntityFactory implements Disposable {
 		float mapHeight = floorLayer.getTileHeight() * floorLayer.getHeight();
 		float yFlip = mapHeight;
 
-		Gdx.app.debug("LOAD_LEVELS", "Level details:\nWidth in tiles (w, h): (" + floorLayer.getWidth() + ", "
-				+ floorLayer.getHeight() + ")\nTile dimensions in pixels (w, h): (" + floorLayer.getTileWidth() + ", "
-				+ floorLayer.getTileHeight() + ")\nMap dimensions in pixels (w, h): (" + mapWidth + ", " + mapHeight
-				+ ").");
+		if (VERBOSE_LOAD)
+			Gdx.app.debug("LOAD_LEVELS", "Level details:\nWidth in tiles (w, h): (" + floorLayer.getWidth() + ", "
+					+ floorLayer.getHeight() + ")\nTile dimensions in pixels (w, h): (" + floorLayer.getTileWidth()
+					+ ", " + floorLayer.getTileHeight() + ")\nMap dimensions in pixels (w, h): (" + mapWidth + ", "
+					+ mapHeight + ").");
 
 		Entity level = generateLevelEntity(map, 0.0f, 0.0f);
 		Entity mirrorLevel = generateLevelEntity(invertedMap, mapWidth, 0.0f);
@@ -263,22 +269,25 @@ public class LevelEntityFactory implements Disposable {
 		world.getManager(GroupManager.class).add(level, groupName);
 		world.getManager(GroupManager.class).add(mirrorLevel, groupName + MIRROR_GROUP_EXTENSION);
 
-		Gdx.app.debug("LOAD_LEVELS", "Generated regular and mirror level entities for " + handle.name()
-				+ " - id reg = " + level.id + ", mirror = " + mirrorLevel.id);
+		if (VERBOSE_LOAD)
+			Gdx.app.debug("LOAD_LEVELS", "Generated regular and mirror level entities for " + handle.name()
+					+ " - id reg = " + level.id + ", mirror = " + mirrorLevel.id);
 
 		for (int i = 0; i < map.getLayers().getCount(); i++) {
 			TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
 			TiledMapTileLayer mirrorLayer = (TiledMapTileLayer) invertedMap.getLayers().get(i);
 
 			if (isInteractableLayer(layer)) {
-				Gdx.app.debug("LOAD_LEVELS", "Loading interactible layer: " + layer.getName());
+				if (VERBOSE_LOAD)
+					Gdx.app.debug("LOAD_LEVELS", "Loading interactible layer: " + layer.getName());
 				Entity platformEntity = generateInteractablePlatformEntity(layer, false, 0.0f, 0.0f);
 				Entity mirroredPlatformEntity = generateInteractablePlatformEntity(mirrorLayer, true, mapWidth, 0.0f);
 
 				positionLinkAndCommitToGroup(platformEntity, mirroredPlatformEntity, mapWidth, yFlip, groupName);
 
 			} else if (isKeyLayer(layer)) {
-				Gdx.app.debug("LOAD_LEVELS", "Loading key layer.");
+				if (VERBOSE_LOAD)
+					Gdx.app.debug("LOAD_LEVELS", "Loading key layer.");
 				String firstChar = ("" + handle.nameWithoutExtension().charAt(0)).toUpperCase();
 				String keyName = firstChar + handle.nameWithoutExtension().substring(1) + " Key";
 				String mirrorKeyName = keyName + MIRROR_GROUP_EXTENSION;
@@ -288,13 +297,15 @@ public class LevelEntityFactory implements Disposable {
 				positionLinkAndCommitToGroup(keyEntity, mirroredKeyEntity, mapWidth, yFlip, groupName);
 
 			} else if (isExitLayer(layer)) {
-				Gdx.app.debug("LOAD_LEVELS", "Loading exit layer.");
+				if (VERBOSE_LOAD)
+					Gdx.app.debug("LOAD_LEVELS", "Loading exit layer.");
 				Entity exitEntity = generateExitEntity(layer, false, 0.0f, 0.0f);
 				Entity mirroredExitEntity = generateExitEntity(mirrorLayer, true, mapWidth, 0.0f);
 				positionLinkAndCommitToGroup(exitEntity, mirroredExitEntity, mapWidth, yFlip, groupName);
 
 			} else if (isSpawnLayer(layer)) {
-				Gdx.app.debug("LOAD_LEVELS", "Loading player spawn layer.");
+				if (VERBOSE_LOAD)
+					Gdx.app.debug("LOAD_LEVELS", "Loading player spawn layer.");
 
 				Vector2 spawn = findFirstCell(layer);
 
@@ -314,7 +325,8 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		levels.add(groupName);
-		Gdx.app.debug("LOAD_LEVELS", "-----\n");
+		if (VERBOSE_LOAD)
+			Gdx.app.debug("LOAD_LEVELS", "-----\n");
 	}
 
 	protected void positionLinkAndCommitToGroup(Entity parent, Entity child, float xOffset, float yFlip,
@@ -874,14 +886,16 @@ public class LevelEntityFactory implements Disposable {
 
 		int otherLayers = 0, dxLayers = 0, dyLayers = 0, minOpacityLayers = 0, propLayers = 0;
 
-		Gdx.app.debug("IS_VALID_LEVEL", "Checking " + mapName + ".");
+		if (VERBOSE_LOAD)
+			Gdx.app.debug("IS_VALID_LEVEL", "Checking " + mapName + ".");
 
 		for (int i = 0; i < map.getLayers().getCount(); i++) {
 			TiledMapTileLayer layer = (TiledMapTileLayer) map.getLayers().get(i);
 			String nlower = layer.getName().toLowerCase();
 
 			if (!layer.getName().equals(nlower)) {
-				Gdx.app.debug("IS_VALID_LEVEL", "Warning: non-lowercase layer name \"" + layer.getName() + "\".");
+				if (VERBOSE_LOAD)
+					Gdx.app.debug("IS_VALID_LEVEL", "Warning: non-lowercase layer name \"" + layer.getName() + "\".");
 			}
 
 			if (found.containsKey(nlower)) {
@@ -921,8 +935,9 @@ public class LevelEntityFactory implements Disposable {
 				}
 
 				if (propCount > 1) {
-					Gdx.app.debug("IS_VALID_LEVEL", "Warning: layer \"" + layer.getName() + "\":- Has " + propCount
-							+ " properties that change behaviour, 1 recommended.");
+					if (VERBOSE_LOAD)
+						Gdx.app.debug("IS_VALID_LEVEL", "Warning: layer \"" + layer.getName() + "\":- Has " + propCount
+								+ " properties that change behaviour, 1 recommended.");
 				}
 			}
 		}
@@ -934,9 +949,10 @@ public class LevelEntityFactory implements Disposable {
 			}
 		}
 
-		Gdx.app.debug("IS_VALID_LEVEL", "Contains " + otherLayers + " non-essential layers, including:\n" + dxLayers
-				+ " dx-layers,\n" + dyLayers + " dy-layers,\n" + minOpacityLayers + " fadable-layers,\nfor a total of "
-				+ propLayers + " layers which can be changed.");
+		if (VERBOSE_LOAD)
+			Gdx.app.debug("IS_VALID_LEVEL", "Contains " + otherLayers + " non-essential layers, including:\n"
+					+ dxLayers + " dx-layers,\n" + dyLayers + " dy-layers,\n" + minOpacityLayers
+					+ " fadable-layers,\nfor a total of " + propLayers + " layers which can be changed.");
 
 		return retVal;
 	}

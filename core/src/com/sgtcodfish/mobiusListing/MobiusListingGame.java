@@ -18,6 +18,7 @@ import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.player.PlayerConstants;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
+import com.sgtcodfish.mobiusListing.systems.CollisionBoxRenderingDebugSystem;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
 import com.sgtcodfish.mobiusListing.systems.LevelAdvanceSystem;
 import com.sgtcodfish.mobiusListing.systems.LinkingSystem;
@@ -74,6 +75,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 			Gdx.app.debug("DEBUG", "Debug logging enabled.");
 		} else {
 			Gdx.app.setLogLevel(Application.LOG_ERROR);
+			LevelEntityFactory.VERBOSE_LOAD = false;
 		}
 
 		world = new World();
@@ -98,6 +100,10 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
+
+		if (DEBUG) {
+			world.setSystem(new CollisionBoxRenderingDebugSystem(camera));
+		}
 
 		world.setSystem(new LevelAdvanceSystem(this), true);
 
@@ -173,13 +179,11 @@ public class MobiusListingGame extends ApplicationAdapter {
 		terrainCollisionSystem.setCollisionMap(levelEntityFactory.getCurrentLevelCollisionMap());
 		movementSystem.doNextLevel(levelEntityFactory.getCurrentLevelCollisionMap().actualWidthInWorld());
 		resetPlayer();
-		playerEntity.getComponent(Inventory.class).inventoryList.clear();
 	}
 
 	public void resetPlayer() {
-		// TODO: More elegant manipulation of inventory.
 		playerEntity.getComponent(Position.class).position.set(levelEntityFactory.getCurrentLevelSpawn());
-		// playerEntity.getComponent(Inventory.class).inventoryList.clear();
+		playerEntity.getComponent(Inventory.class).inventoryList.clear();
 	}
 
 	@Override
