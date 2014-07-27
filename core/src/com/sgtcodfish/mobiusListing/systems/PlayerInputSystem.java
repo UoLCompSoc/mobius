@@ -4,6 +4,7 @@ import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.Filter;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.sgtcodfish.mobiusListing.MobiusListingGame;
@@ -22,6 +23,8 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 	private ComponentMapper<Velocity>		velocityMapper			= null;
 
 	private MobiusListingGame				instance				= null;
+
+	private boolean							hasReleasedSpace		= false;
 
 	@SuppressWarnings("unchecked")
 	public PlayerInputSystem(MobiusListingGame instance) {
@@ -62,13 +65,24 @@ public class PlayerInputSystem extends EntityProcessingSystem {
 				ps.state = HumanoidAnimationState.RUNNING;
 		}
 
-		if (Gdx.input.isKeyPressed(Keys.SPACE) && ps.state != HumanoidAnimationState.JUMPING) {
-			velocityMapper.get(e).velocity.y = PlayerConstants.JUMP_VELOCITY;
-			ps.state = HumanoidAnimationState.JUMPING;
+		if (Gdx.input.isKeyPressed(Keys.SPACE)) {
+			if (hasReleasedSpace && ps.state != HumanoidAnimationState.JUMPING) {
+				velocityMapper.get(e).velocity.y = PlayerConstants.JUMP_VELOCITY;
+				ps.state = HumanoidAnimationState.JUMPING;
+				hasReleasedSpace = false;
+			}
+		} else {
+			hasReleasedSpace = true;
 		}
 
 		if (Gdx.input.isKeyPressed(Keys.P)) {
 			instance.resetPlayer();
+		}
+
+		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
+			if (Gdx.input.isKeyPressed(Keys.NUMPAD_6)) {
+				world.getMapper(Position.class).get(e).position.x += 2.0f;
+			}
 		}
 	}
 }

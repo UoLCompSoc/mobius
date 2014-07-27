@@ -19,10 +19,11 @@ import com.sgtcodfish.mobiusListing.player.HumanoidAnimationState;
 public class TerrainCollisionSystem extends EntityProcessingSystem {
 	private ComponentMapper<Position>		positionMapper	= null;
 	private ComponentMapper<Velocity>		velocityMapper	= null;
+	private ComponentMapper<Solid>			solidMapper		= null;
 
 	private ComponentMapper<PlayerState>	stateMapper		= null;
 
-	private TerrainCollisionMap					collisionMap	= null;
+	private TerrainCollisionMap				collisionMap	= null;
 	private Vector2							collisionVector	= null;
 
 	@SuppressWarnings("unchecked")
@@ -43,6 +44,7 @@ public class TerrainCollisionSystem extends EntityProcessingSystem {
 	public void initialize() {
 		positionMapper = world.getMapper(Position.class);
 		velocityMapper = world.getMapper(Velocity.class);
+		solidMapper = world.getMapper(Solid.class);
 		stateMapper = world.getMapper(PlayerState.class);
 
 		collisionVector = new Vector2();
@@ -51,20 +53,28 @@ public class TerrainCollisionSystem extends EntityProcessingSystem {
 	@Override
 	protected void process(Entity e) {
 		Position position = positionMapper.get(e);
-
 		Velocity v = velocityMapper.get(e);
+		Solid s = solidMapper.get(e);
 
 		PlayerState ps = stateMapper.get(e);
 
+		float playerOffset = 0.0f; // TODO: Fix dirty hack for player collision
+									// box.
+
+		if (ps != null) {
+			playerOffset = 16.0f;
+		}
+
 		collisionVector.set(position.position);
+
 		if (v.velocity.x > 0.0f) {
-			// TODO: fix magic numbers, dirtily increasing by player sprite
-			// size.
-			collisionVector.x += 32.0f;
+			collisionVector.x += s.boundingBox.width - playerOffset;
+		} else {
+			collisionVector.x += playerOffset;
 		}
 
 		if (v.velocity.y > 0.0f) {
-			collisionVector.y += 32.0f;
+			collisionVector.y += s.boundingBox.height;
 		}
 
 		v.velocity.y -= WorldConstants.GRAVITY;

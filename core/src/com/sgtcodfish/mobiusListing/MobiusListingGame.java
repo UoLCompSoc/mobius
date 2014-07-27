@@ -81,7 +81,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world = new World();
 
 		batch = new SpriteBatch();
-		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera = new OrthographicCamera(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 
 		movementSystem = new MovementSystem(0.0f);
 		terrainCollisionSystem = new TerrainCollisionSystem(null);

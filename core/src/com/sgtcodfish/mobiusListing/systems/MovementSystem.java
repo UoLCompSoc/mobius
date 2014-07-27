@@ -13,6 +13,14 @@ import com.sgtcodfish.mobiusListing.player.HumanoidAnimationState;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class MovementSystem extends EntityProcessingSystem {
+	public static final float				FRICTION		= 0.75f;	// TODO:
+																		// Implement
+																		// friction
+																		// and
+																		// air
+																		// resistance
+	public static final float				AIR_RESISTANCE	= 0.75f;
+
 	private ComponentMapper<Position>		positionMapper	= null;
 	private ComponentMapper<Velocity>		velocityMapper	= null;
 
@@ -48,7 +56,19 @@ public class MovementSystem extends EntityProcessingSystem {
 		Velocity v = velocityMapper.get(e);
 		PlayerState ps = stateMapper.get(e);
 
-		v.velocity.x *= 0.75f; // friction
+		if (ps != null) {
+			if (ps.state != HumanoidAnimationState.JUMPING) {
+				v.velocity.x *= FRICTION; // friction, doesn't apply in the air.
+			} else {
+				v.velocity.x *= AIR_RESISTANCE; // air resistance when jumping
+			}
+		} else {
+			v.velocity.x *= FRICTION; // not player so we'll just apply friction
+		}
+
+		// if (v.velocity.y > 0.0f) {
+		// v.velocity.y -= WorldConstants.GRAVITY;
+		// }
 
 		v.velocity.x = (Math.abs(v.velocity.x) < 0.1f ? 0.0f : v.velocity.x);
 		v.velocity.y = (Math.abs(v.velocity.y) < 0.1f ? 0.0f : v.velocity.y);

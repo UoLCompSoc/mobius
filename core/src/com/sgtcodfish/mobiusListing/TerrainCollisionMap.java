@@ -24,7 +24,7 @@ public class TerrainCollisionMap {
 	 *         collide with this map.
 	 */
 	public boolean willCollideY(Vector2 p, Vector2 v) {
-		int tx = worldToTileCoordinatesX(p.x);
+		int tx = worldToTileCoordinatesX(p.x + v.x);
 
 		int ty = worldToTileCoordinatesY(p.y + v.y);
 
@@ -56,7 +56,7 @@ public class TerrainCollisionMap {
 		int tx = (int) (x / layer.getTileWidth());
 
 		if (tx < 0 || tx >= actualWidthInTiles()) {
-			tx = -1;
+			tx = tx % actualWidthInTiles();
 		}
 
 		return tx;
@@ -88,7 +88,7 @@ public class TerrainCollisionMap {
 		return y - (y % layer.getTileHeight());
 	}
 
-	public float actualWidthInTiles() {
+	public int actualWidthInTiles() {
 		return layer.getWidth() * 2;
 	}
 

@@ -23,7 +23,6 @@ public class FadableLayer extends InteractableLayer<Opacity> {
 		} else if (c.opacity >= 1.0f) {
 			c.opacity = 1.0f;
 			opacityDirection = BECOMING_TRANSPARENT;
-
 		}
 	}
 

@@ -106,6 +106,13 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 					if (fadableLayer != null) {
 						fadableLayer.interact(opacityMapper.get(actualEntity), 1);
 					}
+
+					if (movingLayer == null && fadableLayer == null) {
+						Gdx.app.error("PLATFORM_INPUT",
+								"Invalid interactable platform (neither movable or fadable) detected.");
+					} else {
+
+					}
 				}
 			}
 

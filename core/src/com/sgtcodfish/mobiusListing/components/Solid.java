@@ -14,8 +14,14 @@ public class Solid implements Component {
 
 	public Rectangle			boundingBox		= null;
 
+	public boolean				isColliding		= true;
+
 	public float getGravitySignum() {
 		return (!invertedGravity ? 1.0f : -1.0f);
+	}
+
+	public boolean isColliding() {
+		return isColliding;
 	}
 
 	@Override
@@ -23,5 +29,6 @@ public class Solid implements Component {
 		boundingBox = null;
 		weight = DEFAULT_WEIGHT;
 		invertedGravity = false;
+		isColliding = true;
 	}
 }
