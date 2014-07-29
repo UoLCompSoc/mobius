@@ -515,7 +515,7 @@ public class LevelEntityFactory implements Disposable {
 		}
 	}
 
-	protected TiledMap generateInvertedMap(TiledMap map) {
+	public static TiledMap generateInvertedMap(TiledMap map) {
 		TiledMap invertedMap = new TiledMap();
 
 		MapLayers invertedLayers = invertedMap.getLayers();
@@ -536,7 +536,7 @@ public class LevelEntityFactory implements Disposable {
 		return invertedMap;
 	}
 
-	protected TiledMapTileLayer invertLayer(TiledMapTileLayer layer) {
+	public static TiledMapTileLayer invertLayer(TiledMapTileLayer layer) {
 		TiledMapTileLayer invertedLayer = new TiledMapTileLayer(layer.getWidth(), layer.getHeight(),
 				(int) layer.getTileWidth(), (int) layer.getTileHeight());
 
@@ -558,7 +558,7 @@ public class LevelEntityFactory implements Disposable {
 		return invertedLayer;
 	}
 
-	protected void copyLayerProperties(TiledMapTileLayer from, TiledMapTileLayer to) {
+	public static void copyLayerProperties(TiledMapTileLayer from, TiledMapTileLayer to) {
 		MapProperties fromP = from.getProperties();
 		MapProperties toP = to.getProperties();
 		Iterator<String> it = fromP.getKeys();
@@ -579,7 +579,7 @@ public class LevelEntityFactory implements Disposable {
 	 * @return The platform texture; this is unmanaged so if context is lost it
 	 *         will need to be rebuilt.
 	 */
-	protected Texture generateHorizontalPlatformTexture(int size) {
+	public static Texture generateHorizontalPlatformTexture(int size) {
 		final String PLATFORM_TILESET_LOCATION = "tilesets/platformw.png";
 
 		if (size < 2) {
@@ -642,7 +642,7 @@ public class LevelEntityFactory implements Disposable {
 	 * @param size
 	 *        The height of the platform in tiles.
 	 */
-	protected Texture generateVerticalPlatformTexture(int size) {
+	public static Texture generateVerticalPlatformTexture(int size) {
 		final String PLATFORM_TILESET_LOCATION = "tilesets/platformh.png";
 
 		if (size < 2) {
@@ -697,50 +697,19 @@ public class LevelEntityFactory implements Disposable {
 		return texture;
 	}
 
-	/**
-	 * <p>
-	 * Scans every cell in the layer and indiscriminately marks it as solid in a
-	 * collision map.
-	 * </p>
-	 * 
-	 * @param layer
-	 *        The layer to use to generate the map.
-	 * @param The
-	 *        mirror layer corresponding to the layer.
-	 * @return A boolean array where map[layer.getWidth() * y + x] is a cell,
-	 *         and true means "solid".
-	 */
-	protected TerrainCollisionMap generateCollisionMap(TiledMapTileLayer layer, TiledMapTileLayer mirrorLayer) {
-		Array<Boolean> collisionMap = new Array<Boolean>();
-		collisionMap.ensureCapacity((layer.getWidth() + mirrorLayer.getWidth()) * layer.getHeight());
-
-		for (int y = 0; y < layer.getHeight(); y++) {
-			for (int x = 0; x < (layer.getWidth() + mirrorLayer.getWidth()); x++) {
-				if (x < layer.getWidth()) {
-					collisionMap.add((layer.getCell(x, y) != null));
-				} else {
-					collisionMap.add((mirrorLayer.getCell(x - layer.getWidth(), y) != null));
-				}
-			}
-		}
-
-		TerrainCollisionMap retVal = new TerrainCollisionMap(layer, collisionMap);
-		return retVal;
-	}
-
-	protected static boolean isSolidLayer(TiledMapTileLayer layer) {
+	public static boolean isSolidLayer(TiledMapTileLayer layer) {
 		return (layer.getProperties().get("solid", null, String.class) != null);
 	}
 
-	protected static boolean isExitLayer(TiledMapTileLayer layer) {
+	public static boolean isExitLayer(TiledMapTileLayer layer) {
 		return layer.getName().equals("exit");
 	}
 
-	protected static boolean isKeyLayer(TiledMapTileLayer layer) {
+	public static boolean isKeyLayer(TiledMapTileLayer layer) {
 		return layer.getName().equals("key");
 	}
 
-	protected static boolean isSpawnLayer(TiledMapTileLayer layer) {
+	public static boolean isSpawnLayer(TiledMapTileLayer layer) {
 		return layer.getName().equals("playerspawn");
 	}
 
@@ -755,7 +724,7 @@ public class LevelEntityFactory implements Disposable {
 	 * @return true if the layer validates as an interactable layer, false for
 	 *         all other layers.
 	 */
-	protected static boolean isInteractableLayer(TiledMapTileLayer layer) {
+	public static boolean isInteractableLayer(TiledMapTileLayer layer) {
 		MapProperties props = layer.getProperties();
 
 		if (props != null) {
@@ -784,7 +753,7 @@ public class LevelEntityFactory implements Disposable {
 	 *         tile coordinates), or null if the layer is empty. x is right, y
 	 *         is down.
 	 */
-	protected static Vector2 findFirstCell(TiledMapTileLayer layer) {
+	public static Vector2 findFirstCell(TiledMapTileLayer layer) {
 		for (int y = 0; y < layer.getHeight(); y++) {
 			for (int x = 0; x < layer.getWidth(); x++) {
 				if (layer.getCell(x, y) != null) {
@@ -818,7 +787,7 @@ public class LevelEntityFactory implements Disposable {
 	 *         contains only one cell, or null if if the platform's first cell
 	 *         is orphaned and doesn't form a platform.
 	 */
-	protected static Rectangle calculatePlatformRect(TiledMapTileLayer layer) {
+	public static Rectangle calculatePlatformRect(TiledMapTileLayer layer) {
 		Rectangle retVal = new Rectangle();
 
 		Vector2 first = findFirstCell(layer);
