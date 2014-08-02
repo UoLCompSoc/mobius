@@ -12,6 +12,7 @@ import com.sgtcodfish.mobiusListing.components.PlayerSprite;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
 import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.StaticSprite;
+import com.sgtcodfish.mobiusListing.components.Velocity;
 
 /**
  * Handles drawing Entities with a Position and Renderable component
@@ -68,10 +69,20 @@ public class SpriteRenderingSystem extends EntityProcessingSystem {
 		batch.begin();
 
 		if (playerSprite != null) {
-			int mirror = (playerSprite.mirrored ? -1 : 1);
+			Velocity v = world.getMapper(Velocity.class).get(e);
+			int mirror = 1;
 
-			batch.draw(playerSprite.getFrame(playerStateMapper.get(e).state, world.getDelta()), p.position.x,
-					p.position.y, playerSprite.spriteWidth, mirror * playerSprite.spriteHeight);
+			if (v != null) {
+				if (v.velocity.x > 0.0f) {
+					mirror = 1;
+				} else if (v.velocity.x < 0.0f) {
+					mirror = -1;
+				}
+			}
+
+			batch.draw(playerSprite.getFrame(playerStateMapper.get(e).state, world.getDelta()), p.position.x
+					+ (mirror < 0 ? playerSprite.spriteWidth : 0), p.position.y, playerSprite.spriteWidth * mirror,
+					playerSprite.spriteHeight);
 
 		} else if (staticSprite != null) {
 			int mirror = (staticSprite.mirrored ? -1 : 1);

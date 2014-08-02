@@ -18,6 +18,7 @@ import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.levels.LevelEntityFactory;
 import com.sgtcodfish.mobiusListing.player.PlayerConstants;
 import com.sgtcodfish.mobiusListing.player.PlayerEntityFactory;
+import com.sgtcodfish.mobiusListing.systems.AudioSystem;
 import com.sgtcodfish.mobiusListing.systems.CollisionBoxRenderingDebugSystem;
 import com.sgtcodfish.mobiusListing.systems.FocusTakerSystem;
 import com.sgtcodfish.mobiusListing.systems.LevelAdvanceSystem;
@@ -52,6 +53,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 	private MovementSystem							movementSystem			= null;
 	private TerrainCollisionSystem					terrainCollisionSystem	= null;
 	private LinkingSystem							linkingSystem			= null;
+	private AudioSystem								audioSystem				= null;
 
 	private TerrainCollisionBoxRenderingDebugSystem	terrainDebugSystem		= null;
 
@@ -89,6 +91,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		movementSystem = new MovementSystem(0.0f);
 		terrainCollisionSystem = new TerrainCollisionSystem(null);
 		linkingSystem = new LinkingSystem();
+		audioSystem = new AudioSystem();
 
 		world.setSystem(new PlayerInputSystem(this));
 		world.setSystem(new PlatformInputSystem(camera, terrainCollisionSystem));
@@ -103,6 +106,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world.setSystem(new FocusTakerSystem(camera));
 		world.setSystem(new TiledRenderingSystem(batch, camera));
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
+		world.setSystem(audioSystem);
 
 		if (DEBUG) {
 			terrainDebugSystem = new TerrainCollisionBoxRenderingDebugSystem(camera, terrainCollisionSystem);
@@ -121,6 +125,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 		levelEntityFactory = new LevelEntityFactory(world, batch);
 		nextLevel();
+		audioSystem.start();
 	}
 
 	@Override
@@ -196,6 +201,10 @@ public class MobiusListingGame extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
+		if (audioSystem != null) {
+			audioSystem.dispose();
+		}
+
 		if (playerEntityFactory != null) {
 			playerEntityFactory.dispose();
 		}

@@ -152,8 +152,10 @@ public class TerrainCollisionMap implements Poolable {
 	public int worldToTileCoordinatesY(float y) {
 		int ty = (int) (y / layer.getTileHeight());
 
-		if (ty < 0 || ty >= layer.getHeight()) {
+		if (ty < 0) {
 			ty = ty % actualHeightInTiles();
+		} else if (ty >= actualHeightInTiles()) {
+			ty = actualHeightInTiles() - 1;
 		}
 
 		return ty;

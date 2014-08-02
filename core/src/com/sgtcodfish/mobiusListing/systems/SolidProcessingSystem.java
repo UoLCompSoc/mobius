@@ -17,6 +17,7 @@ import com.sgtcodfish.mobiusListing.components.Position;
 import com.sgtcodfish.mobiusListing.components.Solid;
 import com.sgtcodfish.mobiusListing.components.Velocity;
 import com.sgtcodfish.mobiusListing.player.PlayerConstants;
+import com.sgtcodfish.mobiusListing.systems.AudioSystem.MobiusSounds;
 
 /**
  * @author Ashley Davis (SgtCoDFish)
@@ -158,5 +159,6 @@ public class SolidProcessingSystem extends EntityProcessingSystem {
 		Gdx.app.debug("PICKUP", collectable.item.name + " was picked up!");
 
 		linkingSystem.scheduleForRemoval(item);
+		world.getSystem(AudioSystem.class).enqueue(MobiusSounds.BLOOP);
 	}
 }

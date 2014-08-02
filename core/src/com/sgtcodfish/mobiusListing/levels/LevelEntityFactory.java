@@ -60,12 +60,14 @@ public class LevelEntityFactory implements Disposable {
 	// set to true to output detailed info about each level during loading
 	public static boolean						VERBOSE_LOAD			= false;
 
-	// note: level5, level9, level15 removed.
+	// note: level5, level7, level9, level11, level12, level15, level27 removed.
+	// level11: thin corridors
+	// level12: over-edge fade platform
 	public static final String[]				MAP_NAMES				= { "level0.tmx", "level1.tmx", "level2.tmx",
-			"level3.tmx", "level4.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level10.tmx", "level11.tmx",
-			"level12.tmx", "level13.tmx", "level14.tmx", "level16.tmx", "level17.tmx", "level18.tmx", "level19.tmx",
-			"level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx", "level25.tmx", "level26.tmx",
-			"level27.tmx", "level28.tmx", "level29.tmx", "level30.tmx", "level31.tmx", "level32.tmx" };
+			"level3.tmx", "level4.tmx", "level6.tmx", "level8.tmx", "level10.tmx", "level13.tmx", "level14.tmx",
+			"level16.tmx", "level17.tmx", "level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx",
+			"level23.tmx", "level24.tmx", "level25.tmx", "level26.tmx", "level28.tmx", "level29.tmx", "level30.tmx",
+			"level31.tmx", "level32.tmx"								};
 
 	public static final String[]				VITAL_LAYERS			= { "floor", "key", "exit", "playerspawn" };
 
@@ -105,7 +107,7 @@ public class LevelEntityFactory implements Disposable {
 	/**
 	 * <p>
 	 * Generates an array of entities for the next level, and returns it.
-	 * Returns null if there are no more levels.
+	 * Returns false if there are no more levels.
 	 * </p>
 	 * 
 	 * @return true if a level was loaded, false if there are no more levels.
@@ -117,7 +119,7 @@ public class LevelEntityFactory implements Disposable {
 			return false;
 		} else {
 			if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
-				Gdx.app.debug("NEXT_LEVEL", "Level's manager contains "
+				Gdx.app.debug("NEXT_LEVEL", "Level " + getCurrentLevelGroupName() + "'s manager contains "
 						+ world.getManager(GroupManager.class).getEntities(levels.get(levelNumber)).size + " entities.");
 			}
 
@@ -314,14 +316,17 @@ public class LevelEntityFactory implements Disposable {
 
 				levelSpawns.put(groupName, spawn);
 			}
+		}
 
-			if (isSolidLayer(layer)) {
-				if (collisionMaps.get(groupName) == null) {
-					collisionMaps.put(groupName, TerrainCollisionMap.generateCollisionMap(map, invertedMap));
-				} else {
-					throw new GdxRuntimeException("Modifying collision maps NYI");
-				}
+		if (collisionMaps.get(groupName) == null) {
+			TerrainCollisionMap tempCollMap = TerrainCollisionMap.generateCollisionMap(map, invertedMap);
+			if (tempCollMap == null) {
+				Gdx.app.error("LOAD_LEVELS", "Could not create collision map for level " + groupName + ".");
+			} else {
+				collisionMaps.put(groupName, tempCollMap);
 			}
+		} else {
+			throw new GdxRuntimeException("Modifying collision maps NYI");
 		}
 
 		levels.add(groupName);

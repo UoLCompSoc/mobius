@@ -13,12 +13,8 @@ import com.sgtcodfish.mobiusListing.player.HumanoidAnimationState;
  * @author Ashley Davis (SgtCoDFish)
  */
 public class MovementSystem extends EntityProcessingSystem {
-	public static final float				FRICTION		= 0.75f;	// TODO:
-																		// Implement
-																		// friction
-																		// and
-																		// air
-																		// resistance
+	public static final float				FRICTION		= 0.75f;
+	// TODO: Implement friction and air resistance
 	public static final float				AIR_RESISTANCE	= 0.75f;
 
 	private ComponentMapper<Position>		positionMapper	= null;
