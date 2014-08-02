@@ -1,10 +1,15 @@
 package com.sgtcodfish.mobiusListing.systems;
 
+import java.util.ArrayList;
+
 import com.artemis.ComponentMapper;
 import com.artemis.Entity;
 import com.artemis.Filter;
 import com.artemis.systems.EntityProcessingSystem;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Pool;
+import com.badlogic.gdx.utils.Pool.Poolable;
 import com.sgtcodfish.mobiusListing.TerrainCollisionMap;
 import com.sgtcodfish.mobiusListing.WorldConstants;
 import com.sgtcodfish.mobiusListing.components.PlayerState;
@@ -26,6 +31,9 @@ public class TerrainCollisionSystem extends EntityProcessingSystem {
 	private TerrainCollisionMap				collisionMap	= null;
 	private Vector2							collisionVector	= null;
 
+	private Pool<LayerAndDegree>			ladPool			= null;
+	private ArrayList<LayerAndDegree>		interactedList	= null;
+
 	@SuppressWarnings("unchecked")
 	public TerrainCollisionSystem(TerrainCollisionMap collisionMap) {
 		this(Filter.allComponents(Position.class, Velocity.class, Solid.class), collisionMap);
@@ -33,11 +41,23 @@ public class TerrainCollisionSystem extends EntityProcessingSystem {
 
 	protected TerrainCollisionSystem(Filter filter, TerrainCollisionMap collisionMap) {
 		super(filter);
+
+		this.interactedList = new ArrayList<LayerAndDegree>();
 		this.collisionMap = collisionMap;
+		this.ladPool = new Pool<TerrainCollisionSystem.LayerAndDegree>() {
+			@Override
+			protected LayerAndDegree newObject() {
+				return new LayerAndDegree();
+			}
+		};
 	}
 
 	public void setCollisionMap(TerrainCollisionMap collisionMap) {
 		this.collisionMap = collisionMap;
+	}
+
+	public TerrainCollisionMap getCollisionMap() {
+		return collisionMap;
 	}
 
 	@Override
@@ -48,6 +68,16 @@ public class TerrainCollisionSystem extends EntityProcessingSystem {
 		stateMapper = world.getMapper(PlayerState.class);
 
 		collisionVector = new Vector2();
+	}
+
+	@Override
+	public void begin() {
+		for (LayerAndDegree lad : interactedList) {
+			collisionMap.layerInteracted(lad.layer, lad.degree);
+			ladPool.free(lad);
+		}
+
+		interactedList.clear();
 	}
 
 	@Override
@@ -97,5 +127,35 @@ public class TerrainCollisionSystem extends EntityProcessingSystem {
 	@Override
 	protected boolean checkProcessing() {
 		return (collisionMap != null);
+	}
+
+	public void platformInteracted(TiledMapTileLayer layer, int degree) {
+		interactedList.add(ladPool.obtain().set(degree, layer));
+	}
+
+	private class LayerAndDegree implements Poolable {
+		public int					degree	= 0;
+		public TiledMapTileLayer	layer	= null;
+
+		public LayerAndDegree() {
+			this(0, null);
+		}
+
+		public LayerAndDegree(int degree, TiledMapTileLayer layer) {
+			set(degree, layer);
+		}
+
+		public LayerAndDegree set(int degree, TiledMapTileLayer layer) {
+			this.degree = degree;
+			this.layer = layer;
+
+			return this;
+		}
+
+		@Override
+		public void reset() {
+			degree = 0;
+			layer = null;
+		}
 	}
 }

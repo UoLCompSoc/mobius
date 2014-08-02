@@ -30,6 +30,7 @@ import com.sgtcodfish.mobiusListing.Item;
 import com.sgtcodfish.mobiusListing.Item.ItemType;
 import com.sgtcodfish.mobiusListing.TerrainCollisionMap;
 import com.sgtcodfish.mobiusListing.WorldConstants;
+import com.sgtcodfish.mobiusListing.WorldConstants.InteractableLayerTypes;
 import com.sgtcodfish.mobiusListing.components.ChildLinked;
 import com.sgtcodfish.mobiusListing.components.Collectable;
 import com.sgtcodfish.mobiusListing.components.DxLayer;
@@ -59,13 +60,12 @@ public class LevelEntityFactory implements Disposable {
 	// set to true to output detailed info about each level during loading
 	public static boolean						VERBOSE_LOAD			= false;
 
-	// note: level15 is removed.
+	// note: level5, level9, level15 removed.
 	public static final String[]				MAP_NAMES				= { "level0.tmx", "level1.tmx", "level2.tmx",
-			"level3.tmx", "level4.tmx", "level5.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level9.tmx",
-			"level10.tmx", "level11.tmx", "level12.tmx", "level13.tmx", "level14.tmx", "level16.tmx", "level17.tmx",
-			"level18.tmx", "level19.tmx", "level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx",
-			"level25.tmx", "level26.tmx", "level27.tmx", "level28.tmx", "level29.tmx", "level30.tmx", "level31.tmx",
-			"level32.tmx"												};
+			"level3.tmx", "level4.tmx", "level6.tmx", "level7.tmx", "level8.tmx", "level10.tmx", "level11.tmx",
+			"level12.tmx", "level13.tmx", "level14.tmx", "level16.tmx", "level17.tmx", "level18.tmx", "level19.tmx",
+			"level20.tmx", "level21.tmx", "level22.tmx", "level23.tmx", "level24.tmx", "level25.tmx", "level26.tmx",
+			"level27.tmx", "level28.tmx", "level29.tmx", "level30.tmx", "level31.tmx", "level32.tmx" };
 
 	public static final String[]				VITAL_LAYERS			= { "floor", "key", "exit", "playerspawn" };
 
@@ -317,7 +317,7 @@ public class LevelEntityFactory implements Disposable {
 
 			if (isSolidLayer(layer)) {
 				if (collisionMaps.get(groupName) == null) {
-					collisionMaps.put(groupName, generateCollisionMap(layer, mirrorLayer));
+					collisionMaps.put(groupName, TerrainCollisionMap.generateCollisionMap(map, invertedMap));
 				} else {
 					throw new GdxRuntimeException("Modifying collision maps NYI");
 				}
@@ -736,6 +736,18 @@ public class LevelEntityFactory implements Disposable {
 		}
 
 		return false;
+	}
+
+	public static InteractableLayerTypes getInteractableLayerType(TiledMapTileLayer layer) {
+		MapProperties props = layer.getProperties();
+
+		for (String s : WorldConstants.interactableLayersProperties) {
+			if (props.get(s) != null) {
+				return InteractableLayerTypes.fromProperty(s);
+			}
+		}
+
+		return null;
 	}
 
 	/**

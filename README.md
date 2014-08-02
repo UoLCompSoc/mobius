@@ -1,14 +1,14 @@
 Möbius
-==============================
+======
 
 Instructions
-----
-- The goal of each level is to collect the processor (key) and then make the way to the chip (exit)
+------------
+- The goal of each level is to collect the processor (key) and make your way to the chip (exit).
 
-- Each red object will have one of three actions available to it, move, become solid or become unsolid upon interaction
+- Each red platform will have one of three actions available to it: move, become solid or become unsolid upon interaction by left clicking. Use these platforms to help you solve the puzzles!
 
 Controls
-----
+--------
 - D - run
 
 - Space - jump
@@ -19,16 +19,22 @@ Controls
 
 - Left click on red objects to interact with them
 
-- F10 - Skip level
 
+About
+-----
 
-LD29 - Theme "Beneath the Surface"
+Created for Ludum Dare 29 - Theme "Beneath the Surface"
+
+Team:
+
+Programming - Ashley Davis (@SgtCoDFish)
+Art/Sound/Level Design - Scott Balchin (@Zeta-Function)
 
 TODO
 ----
 
-- Wrapping around (NYI)
+- Music/Sounds
 
-- Music (NYI)
+- Improved collision detection and better movement of platforms.
 
-- Android (not supported for LD)
+- Android (possibly HTML5 too but very unlikely)

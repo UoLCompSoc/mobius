@@ -35,6 +35,8 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 
 	private ComponentMapper<ChildLinked>	childLinkedMapper		= null;
 
+	private TerrainCollisionSystem			collisionSystem			= null;
+
 	private static final float				CLICK_WAIT_TIME			= 0.5f;
 	private float							timeSinceLastClick		= CLICK_WAIT_TIME;
 	private boolean							clickFlag				= false;
@@ -45,15 +47,16 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 	private boolean							hasReleased				= false;
 
 	@SuppressWarnings("unchecked")
-	public PlatformInputSystem(Camera camera) {
+	public PlatformInputSystem(Camera camera, TerrainCollisionSystem collisionSystem) {
 		this(Filter.allComponents(PlatformInputListener.class, PlatformSprite.class).any(DxLayer.class, DyLayer.class,
-				FadableLayer.class), camera);
+				FadableLayer.class), collisionSystem, camera);
 	}
 
-	protected PlatformInputSystem(Filter filter, Camera camera) {
+	protected PlatformInputSystem(Filter filter, TerrainCollisionSystem collisionSystem, Camera camera) {
 		super(filter);
 
 		this.camera = camera;
+		this.collisionSystem = collisionSystem;
 		this.mouse = new Vector3();
 	}
 
@@ -69,9 +72,12 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 	}
 
 	@Override
-	protected void process(Entity e) {
+	public void begin() {
 		timeSinceLastClick += world.getDelta();
+	}
 
+	@Override
+	protected void process(Entity e) {
 		if (timeSinceLastClick > CLICK_WAIT_TIME && hasReleased) {
 			Position p = positionMapper.get(e);
 			PlatformSprite platformSprite = platformSpriteMapper.get(e);
@@ -99,19 +105,19 @@ public class PlatformInputSystem extends EntityProcessingSystem {
 					MovingLayer movingLayer = (dxLayer != null ? dxLayer : dyLayerMapper.get(actualEntity));
 					FadableLayer fadableLayer = fadableLayerMapper.get(actualEntity);
 
-					if (movingLayer != null) {
-						movingLayer.interact(positionMapper.get(actualEntity), 1);
-					}
+					final int degree = 1; // could be different in future
 
-					if (fadableLayer != null) {
-						fadableLayer.interact(opacityMapper.get(actualEntity), 1);
+					if (movingLayer != null) {
+						collisionSystem.platformInteracted(movingLayer.layer, degree * movingLayer.tempDirection);
+						movingLayer.interact(positionMapper.get(actualEntity), degree);
+					} else if (fadableLayer != null) {
+						collisionSystem.platformInteracted(fadableLayer.layer, degree);
+						fadableLayer.interact(opacityMapper.get(actualEntity), degree);
 					}
 
 					if (movingLayer == null && fadableLayer == null) {
 						Gdx.app.error("PLATFORM_INPUT",
 								"Invalid interactable platform (neither movable or fadable) detected.");
-					} else {
-
 					}
 				}
 			}

@@ -27,6 +27,7 @@ import com.sgtcodfish.mobiusListing.systems.PlatformInputSystem;
 import com.sgtcodfish.mobiusListing.systems.PlayerInputSystem;
 import com.sgtcodfish.mobiusListing.systems.SolidProcessingSystem;
 import com.sgtcodfish.mobiusListing.systems.SpriteRenderingSystem;
+import com.sgtcodfish.mobiusListing.systems.TerrainCollisionBoxRenderingDebugSystem;
 import com.sgtcodfish.mobiusListing.systems.TerrainCollisionSystem;
 import com.sgtcodfish.mobiusListing.systems.TiledRenderingSystem;
 
@@ -41,24 +42,26 @@ public class MobiusListingGame extends ApplicationAdapter {
 		TITLE_SCREEN, PLAYING;
 	}
 
-	public static boolean			DEBUG					= false;
+	public static boolean							DEBUG					= false;
 
-	private SpriteBatch				batch					= null;
-	private Camera					camera					= null;
+	private SpriteBatch								batch					= null;
+	private Camera									camera					= null;
 
-	public World					world					= null;
+	public World									world					= null;
 
-	private MovementSystem			movementSystem			= null;
-	private TerrainCollisionSystem	terrainCollisionSystem	= null;
-	private LinkingSystem			linkingSystem			= null;
+	private MovementSystem							movementSystem			= null;
+	private TerrainCollisionSystem					terrainCollisionSystem	= null;
+	private LinkingSystem							linkingSystem			= null;
 
-	public PlayerEntityFactory		playerEntityFactory		= null;
-	private Entity					playerEntity			= null;
+	private TerrainCollisionBoxRenderingDebugSystem	terrainDebugSystem		= null;
 
-	public LevelEntityFactory		levelEntityFactory		= null;
+	public PlayerEntityFactory						playerEntityFactory		= null;
+	private Entity									playerEntity			= null;
 
-	private final float				DEBUG_COOLDOWN			= 1.0f;
-	private float					timeSinceLastDebug		= DEBUG_COOLDOWN;
+	public LevelEntityFactory						levelEntityFactory		= null;
+
+	private final float								DEBUG_COOLDOWN			= 1.0f;
+	private float									timeSinceLastDebug		= DEBUG_COOLDOWN;
 
 	public MobiusListingGame() {
 		this(false);
@@ -88,7 +91,7 @@ public class MobiusListingGame extends ApplicationAdapter {
 		linkingSystem = new LinkingSystem();
 
 		world.setSystem(new PlayerInputSystem(this));
-		world.setSystem(new PlatformInputSystem(camera));
+		world.setSystem(new PlatformInputSystem(camera, terrainCollisionSystem));
 
 		world.setSystem(new SolidProcessingSystem(linkingSystem));
 		world.setSystem(terrainCollisionSystem);
@@ -102,7 +105,9 @@ public class MobiusListingGame extends ApplicationAdapter {
 		world.setSystem(new SpriteRenderingSystem(batch, camera));
 
 		if (DEBUG) {
+			terrainDebugSystem = new TerrainCollisionBoxRenderingDebugSystem(camera, terrainCollisionSystem);
 			world.setSystem(new CollisionBoxRenderingDebugSystem(camera));
+			world.setSystem(terrainDebugSystem);
 		}
 
 		world.setSystem(new LevelAdvanceSystem(this), true);
@@ -132,18 +137,16 @@ public class MobiusListingGame extends ApplicationAdapter {
 		PlayerConstants.interacting = Gdx.input.isKeyPressed(Keys.W);
 
 		world.process();
-		timeSinceLastDebug += deltaTime;
-		if (timeSinceLastDebug > DEBUG_COOLDOWN) {
-			if (Gdx.input.isKeyPressed(Keys.F10)) {
-				nextLevel();
-				timeSinceLastDebug = 0.0f;
-			}
-		}
 
 		if (Gdx.app.getLogLevel() == Application.LOG_DEBUG) {
 			timeSinceLastDebug += deltaTime;
 
 			if (timeSinceLastDebug > DEBUG_COOLDOWN) {
+				if (Gdx.input.isKeyPressed(Keys.F10)) {
+					nextLevel();
+					timeSinceLastDebug = 0.0f;
+				}
+
 				if (Gdx.input.isKeyPressed(Keys.F8)) {
 					timeSinceLastDebug = 0.0f;
 					Position p = playerEntity.getComponent(Position.class);

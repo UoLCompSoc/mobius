@@ -40,6 +40,18 @@ public class WorldConstants {
 				throw new IllegalStateException("Invalid state in layerPropertyOf");
 			}
 		}
+
+		public static InteractableLayerTypes fromProperty(String property) {
+			if ("dx".equals(property)) {
+				return DX;
+			} else if ("dy".equals(property)) {
+				return DY;
+			} else if ("minOpacity".equals(property)) {
+				return FADABLE;
+			} else {
+				return null;
+			}
+		}
 	}
 
 	public static final String[]	interactableLayersProperties	= { "dx", "dy", "minOpacity" };
