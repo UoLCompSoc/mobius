@@ -33,8 +33,6 @@ Art/Sound/Level Design - Scott Balchin (@Zeta-Function)
 TODO
 ----
 
-- Music/Sounds
-
 - Improved collision detection and better movement of platforms.
 
-- Android (possibly HTML5 too but very unlikely)
+- Android/HTML5 (possible but unlikely)
